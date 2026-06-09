@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turnover Assessment Dashboard</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- PapaParse CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <style>
+    :root {
+      --bg-gradient-start: #090d16;
+      --bg-gradient-end: #121829;
+      --card-bg: rgba(22, 28, 45, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-primary: #6366f1; /* Indigo */
+      --accent-secondary: #06b6d4; /* Cyan */
+      --accent-purple: #a855f7; /* Purple */
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --transition-speed: 0.2s;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Layout */
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Sidebar Styles */
+    aside {
+      background: rgba(15, 20, 35, 0.85);
+      border-right: 1px solid var(--card-border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .logo-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #ffffff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .control-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    /* Filters Dropdowns */
+    .filter-select {
+      background: rgba(10, 14, 26, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+      transition: border-color var(--transition-speed);
+      cursor: pointer;
+    }
+
+    .filter-select:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .search-input {
+      background: rgba(10, 14, 26, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+      transition: border-color var(--transition-speed);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* Main Content */
+    main {
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 16px;
+      }
+    }
+
+    /* Top Controls Row */
+    .top-controls-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+    }
+
+    .row-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* Button Groups */
+    .btn-group {
+      display: inline-flex;
+      background: rgba(10, 14, 26, 0.7);
+      border: 1px solid var(--card-border);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .btn-group-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      outline: none;
+    }
+
+    .btn-group-btn.active {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+      color: white;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-group-btn:hover:not(.active) {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Date Slider Styles */
+    .slider-container {
+      width: 100%;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .slider-wrapper {
+      position: relative;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin: 15px 0 10px 0;
+    }
+
+    .slider-track {
+      position: absolute;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 3px;
+    }
+
+    .slider-input {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      top: -6px;
+      background: none;
+      pointer-events: none;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+      border: none;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid var(--accent-primary);
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-appearance: none;
+      box-shadow: 0 0 5px rgba(0,0,0,0.5);
+      transition: transform 0.1s;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 12px 16px;
+      border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    .clickable-row {
+      cursor: pointer;
+      transition: background var(--transition-speed);
+    }
+
+    .clickable-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Hierarchical nested rows styles */
+    .sub-table-row {
+      background: rgba(10, 14, 26, 0.4);
+    }
+
+    .nested-cell {
+      padding: 0 !important;
+    }
+
+    .nested-table-wrap {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 16px;
+      border-left: 3px solid var(--accent-primary);
+      margin: 8px 12px;
+      background: rgba(9, 13, 24, 0.6);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .tag-table-wrap {
+      padding: 12px 16px;
+      border-left: 3px solid var(--accent-secondary);
+      margin: 6px 16px;
+      background: rgba(5, 7, 12, 0.8);
+      border-radius: 0 6px 6px 0;
+    }
+
+    .expand-icon {
+      display: inline-block;
+      width: 16px;
+      text-align: center;
+      margin-right: 8px;
+      transition: transform var(--transition-speed);
+      color: var(--text-muted);
+    }
+
+    .expanded .expand-icon {
+      transform: rotate(90deg);
+      color: var(--accent-primary);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .badge-largecap {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-midcap {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .badge-smallcap {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-neutral {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* Numeric formatting */
+    .number-col {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .positive {
+      color: var(--success);
+    }
+
+    /* Chart Controls */
+    .chart-controls {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Loader / Overlay styles */
+    .loader-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 11, 20, 0.95);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      transition: opacity 0.4s;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s infinite linear;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: white;
+    }
+
+    .loader-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 400px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* Dropzone area */
+    .dropzone-container {
+      margin-top: 15px;
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.02);
+      transition: all var(--transition-speed);
+      max-width: 550px;
+      width: 90%;
+    }
+
+    .dropzone-container:hover, .dropzone-container.dragover {
+      border-color: var(--accent-secondary);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    .dropzone-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: white;
+    }
+
+    .dropzone-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .file-status-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      margin-top: 16px;
+    }
+
+    .file-status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .file-status-ok {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .file-status-missing {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    /* Hidden inputs */
+    #file-inputs-raw {
+      display: none;
+    }
+
+    /* Helper utility classes */
+    .hidden {
+      display: none !important;
+    }
+
+    .d-flex {
+      display: flex;
+    }
+    .flex-column {
+      flex-direction: column;
+    }
+    .gap-2 {
+      gap: 8px;
+    }
+    .text-center {
+      text-align: center;
+    }
+    .m-t-auto {
+      margin-top: auto;
+    }
+
+    /* Tag menu comparison styling */
+    .tag-compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .tag-compare-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tag-compare-title {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .tag-compare-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: white;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .tag-compare-stats {
+      font-size: 0.82rem;
+      color: var(--accent-secondary);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading State & Drag-and-Drop Fallback -->
+  <div id="loader-screen" class="loader-overlay">
+    <div id="loader-spinner" class="spinner"></div>
+    <div id="loader-main-text" class="loader-text">Loading Turnover Assessment Dashboard...</div>
+    <div id="loader-sub-text" class="loader-sub">Attempting to load CSV files dynamically from folders.</div>
+    
+    <!-- Upload Zone (Hidden by default, shown if fetches fail) -->
+    <div id="dropzone" class="dropzone-container hidden">
+      <div class="dropzone-title">CORS/Local File Policy Restriction Detected</div>
+      <div class="dropzone-desc">
+        Your browser prevents loading files via relative HTTP requests from the local drive (`file:///`). 
+        Please drag and drop or select the 5 required CSV files from this directory.
+      </div>
+      <button class="btn-group-btn active" style="padding: 10px 20px;" onclick="triggerFileSelect()">Select Files</button>
+      <div class="file-status-list" id="file-status-board">
+        <!-- Dyn status -->
+      </div>
+    </div>
+    <input type="file" id="file-inputs-raw" multiple accept=".csv" onchange="handleFileSelection(event)">
+  </div>
+
+  <!-- Dashboard Main Layout -->
+  <div class="dashboard-container">
+    
+    <!-- Sidebar Controls -->
+    <aside>
+      <div class="logo-container">
+        <div class="logo-icon">T</div>
+        <div class="logo-text">
+          <h1>Turnover Assessment</h1>
+          <p>Market Data Analytics</p>
+        </div>
+      </div>
+
+      <!-- Filters Panel -->
+      <div class="control-section">
+        <div class="control-label">Search Company</div>
+        <input type="text" id="company-search" class="search-input" placeholder="Type symbol or name..." oninput="applyFiltersAndRefresh()">
+      </div>
+
+      <!-- Filter Dropdowns generated dynamically from control_menu.csv -->
+      <div class="control-section" id="dynamic-filters-box">
+        <!-- filters added on the fly -->
+      </div>
+
+      <div class="control-section m-t-auto" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
+        <div class="control-label">Source Info</div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+          Data dynamic parsed from loaded files. Toggle variables to customize calculations.
+        </p>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main>
+      
+      <!-- Top Configurations Bar -->
+      <div class="top-controls-bar">
+        <div class="row-flex">
+          
+          <!-- Mode Selector (Daily / Monthly) -->
+          <div class="d-flex flex-column gap-2">
+            <div class="control-label">Mode Selector</div>
+            <div class="btn-group" id="mode-btn-group">
+              <button class="btn-group-btn active" onclick="setMode('daily')">Daily Data</button>
+              <button class="btn-group-btn" onclick="setMode('monthly')">Monthly Data</button>
+            </div>
+          </div>
+
+          <!-- Dynamic Aggregation Dimension Button Group -->
+          <div class="d-flex flex-column gap-2">
+            <div class="control-label">Aggregation Dimension</div>
+            <div class="btn-group" id="agg-btn-group">
+              <button class="btn-group-btn active" id="btn-agg-default" onclick="setAggDimension('default')">Company (Default)</button>
+              <!-- Dinamically loaded buttons from control_menu -->
+            </div>
+          </div>
+
+          <!-- Time-based Aggregation buttons -->
+          <div class="d-flex flex-column gap-2">
+            <div class="control-label">Time Grouping</div>
+            <div class="btn-group" id="time-group-btn-group">
+              <!-- Dynamically populated depending on mode -->
+            </div>
+          </div>
+
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.05); margin: 15px 0 5px 0;"></div>
+
+        <!-- Date Range Slider -->
+        <div class="slider-container">
+          <div class="slider-labels">
+            <span>Date Range Slider:</span>
+            <span id="slider-range-text" style="font-weight: 600; color: var(--accent-secondary);">Loading dates...</span>
+          </div>
+          <div class="slider-wrapper">
+            <div class="slider-track" id="slider-track"></div>
+            <input type="range" class="slider-input" id="slider-min" oninput="slideMin()">
+            <input type="range" class="slider-input" id="slider-max" oninput="slideMax()">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dashboard Cards -->
+      <div class="dashboard-grid">
+        
+        <!-- Table Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" id="table-card-title">Turnover Aggregations</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);" id="table-row-count">Showing 0 rows</div>
+          </div>
+          <div class="table-container">
+            <table id="main-data-table">
+              <thead>
+                <tr id="table-headers">
+                  <!-- Dynamic Headers -->
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <!-- Dynamic Content -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Chart Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Trend Visualization</div>
+            <div class="chart-controls">
+              
+              <!-- X Axis Selector -->
+              <div class="d-flex gap-2" style="align-items: center;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">X Axis:</span>
+                <select id="chart-x-axis" class="filter-select" style="padding: 4px 8px; width: 140px; font-size: 0.8rem;" onchange="updateChart()">
+                  <option value="time">Time Period</option>
+                  <!-- Din values populated on demand -->
+                </select>
+              </div>
+
+              <!-- Y Axis Selector -->
+              <div class="d-flex gap-2" style="align-items: center;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Y Axis:</span>
+                <select id="chart-y-axis" class="filter-select" style="padding: 4px 8px; width: 140px; font-size: 0.8rem;" onchange="updateChart()">
+                  <option value="turnover">Turnover (Cr ₹)</option>
+                  <option value="volume">Traded Volume</option>
+                  <option value="price">Avg Close Price</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+          <div style="height: 380px; position: relative; width: 100%;">
+            <canvas id="analyticsChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    // Constants
+    const REQUIRED_FILES = {
+      daily: 'bhavcopy_daily.csv',
+      monthly: 'bhavcopy_monthly.csv',
+      master: 'company_master.csv',
+      control: 'control_menu.csv',
+      tag: 'tag_menu.csv'
+    };
+
+    // State
+    let state = {
+      currentMode: 'daily', // 'daily' or 'monthly'
+      currentAggDimension: 'default', // 'default' or dimension field name e.g. 'Category'
+      currentTimeGrouping: 'default', // 'default', 'weekly', 'semimonthly', 'monthly', etc.
+      activeRange: { minIdx: 0, maxIdx: 100 }, // date slider indices
+      dateList: [], // sorted unique dates in the current dataset
+      rawFiles: {
+        daily: null,
+        monthly: null,
+        master: null,
+        control: null,
+        tag: null
+      },
+      parsedData: {
+        daily: [],
+        monthly: [],
+        master: [],
+        control: [],
+        tag: []
+      },
+      masterLookup: {}, // ISIN & symbol mappings
+      dynamicFilters: {}, // Active values selected in filters e.g. { Category: 'All' }
+      expandedRows: new Set(), // Level 1 expanded row IDs
+      expandedSubRows: new Set(), // Level 2 expanded row IDs
+      chartInstance: null
+    };
+
+    // Prefix for File_Name check
+    const prefixCheckStr = (window.location.pathname.split('/').pop() || 'turnover_assement.html').toLowerCase();
+
+    // Triggered on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      autoFetchFiles();
+    });
+
+    // Attempt to automatically fetch the files relative to html directory
+    function autoFetchFiles() {
+      showLoadingText('Fetching dataset files from directory...');
+      
+      const fetchPromises = Object.entries(REQUIRED_FILES).map(([key, filename]) => {
+        return fetch(filename)
+          .then(res => {
+            if (!res.ok) throw new Error(`Status ${res.status}`);
+            return res.text();
+          })
+          .then(text => {
+            state.rawFiles[key] = text;
+          });
+      });
+
+      Promise.all(fetchPromises)
+        .then(() => {
+          showLoadingText('Parsing data files...');
+          setTimeout(processAndInitialize, 150);
+        })
+        .catch(err => {
+          console.warn('Auto-fetch failed. Activating manual upload fallback.', err);
+          activateManualUploadFallback();
+        });
+    }
+
+    function showLoadingText(text) {
+      document.getElementById('loader-main-text').innerText = text;
+    }
+
+    // Show manual dropzone fallback when relative fetch fails (e.g. CORS)
+    function activateManualUploadFallback() {
+      document.getElementById('loader-spinner').classList.add('hidden');
+      document.getElementById('loader-main-text').innerText = 'Local File Access Restricted';
+      document.getElementById('loader-sub-text').innerHTML = 
+        'Browsers restrict loading local files directly via relative HTTP requests (CORS).<br>Please select or drag-and-drop the files from this folder to load them:';
+      document.getElementById('dropzone').classList.remove('hidden');
+      updateFileStatusBoard();
+    }
+
+    function triggerFileSelect() {
+      document.getElementById('file-inputs-raw').click();
+    }
+
+    // Handle files selected via input or drag-and-drop
+    function handleFileSelection(e) {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+      readUploadedFiles(files);
+    }
+
+    // Drag over styling
+    const dropzone = document.getElementById('dropzone');
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        readUploadedFiles(files);
+      }
+    });
+
+    // Read files using FileReader and match them by file name
+    function readUploadedFiles(files) {
+      let filesToRead = Array.from(files);
+      let loadedCount = 0;
+
+      showLoadingText('Reading uploaded files...');
+
+      filesToRead.forEach(file => {
+        const name = file.name.toLowerCase();
+        let targetKey = null;
+
+        if (name.includes('bhavcopy_daily') || name.includes('daily')) targetKey = 'daily';
+        else if (name.includes('bhavcopy_monthly') || name.includes('monthly')) targetKey = 'monthly';
+        else if (name.includes('company_master') || name.includes('master')) targetKey = 'master';
+        else if (name.includes('control_menu') || name.includes('control')) targetKey = 'control';
+        else if (name.includes('tag_menu') || name.includes('tag')) targetKey = 'tag';
+
+        if (targetKey) {
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            state.rawFiles[targetKey] = evt.target.result;
+            loadedCount++;
+            updateFileStatusBoard();
+
+            // If all 5 files are loaded, proceed!
+            if (hasAllFiles()) {
+              document.getElementById('dropzone').classList.add('hidden');
+              document.getElementById('loader-spinner').classList.remove('hidden');
+              showLoadingText('All files loaded. Parsing data...');
+              setTimeout(processAndInitialize, 200);
+            }
+          };
+          reader.readAsText(file);
+        }
+      });
+    }
+
+    function hasAllFiles() {
+      return Object.values(state.rawFiles).every(content => content !== null);
+    }
+
+    function updateFileStatusBoard() {
+      const board = document.getElementById('file-status-board');
+      board.innerHTML = '';
+
+      Object.entries(REQUIRED_FILES).forEach(([key, filename]) => {
+        const isLoaded = state.rawFiles[key] !== null;
+        const item = document.createElement('div');
+        item.className = 'file-status-item';
+        item.innerHTML = `
+          <span>${filename}</span>
+          <span class="${isLoaded ? 'file-status-ok' : 'file-status-missing'}">
+            ${isLoaded ? '✓ Loaded' : '✗ Missing'}
+          </span>
+        `;
+        board.appendChild(item);
+      });
+    }
+
+    // Process parsed CSV files, build lookups, and load UI
+    function processAndInitialize() {
+      try {
+        // Parse CSVs using PapaParse
+        Object.entries(state.rawFiles).forEach(([key, rawText]) => {
+          const parsed = Papa.parse(rawText, {
+            header: true,
+            skipEmptyLines: true
+          });
+          state.parsedData[key] = parsed.data;
+        });
+
+        // Clean headers and values in master & bhavcopies
+        cleanHeadersAndValues();
+
+        // 1. Process control_menu.csv and tag_menu.csv by prefix check
+        state.parsedData.control = state.parsedData.control.filter(row => {
+          const fn = (row.File_Name || '').toLowerCase().trim();
+          return fn && prefixCheckStr.includes(fn);
+        });
+
+        state.parsedData.tag = state.parsedData.tag.filter(row => {
+          const fn = (row.File_Name || '').toLowerCase().trim();
+          return fn && prefixCheckStr.includes(fn);
+        });
+
+        // 2. Build the company master lookup dictionary
+        buildMasterLookup();
+
+        // 3. Process Bhavcopies: Map each row to its company metadata
+        mapBhavcopyToMaster(state.parsedData.daily);
+        mapBhavcopyToMaster(state.parsedData.monthly);
+
+        // 4. Initialize global dimensions filters & inputs
+        initializeFiltersAndControls();
+
+        // 5. Hide Loader Screen
+        document.getElementById('loader-screen').classList.add('hidden');
+
+        // 6. Draw Dashboard content
+        setMode('daily'); // Start with Daily Mode
+
+      } catch (err) {
+        console.error('Initial parsing/processing failed', err);
+        showLoadingText('Fatal Error: Failed to parse files correctly.');
+        document.getElementById('loader-spinner').classList.add('hidden');
+        document.getElementById('loader-sub-text').innerHTML = `<span style="color:var(--danger)">Error: ${err.message}. Please refresh and check your files.</span>`;
+      }
+    }
+
+    function cleanHeadersAndValues() {
+      // Helper function to clean keys of object
+      const cleanKeys = (obj) => {
+        const newObj = {};
+        Object.entries(obj).forEach(([k, v]) => {
+          newObj[k.trim()] = (v || '').trim();
+        });
+        return newObj;
+      };
+
+      state.parsedData.master = state.parsedData.master.map(cleanKeys);
+      state.parsedData.daily = state.parsedData.daily.map(cleanKeys);
+      state.parsedData.monthly = state.parsedData.monthly.map(cleanKeys);
+      state.parsedData.control = state.parsedData.control.map(cleanKeys);
+      state.parsedData.tag = state.parsedData.tag.map(cleanKeys);
+    }
+
+    // Building mapping index
+    function buildMasterLookup() {
+      state.masterLookup = {};
+      
+      state.parsedData.master.forEach(row => {
+        const isin = row.ISIN;
+        const nse = row.NSE_symb;
+        const bse = row.BSE_symb;
+        
+        const info = {
+          companyName: row['Company name'],
+          isin: isin,
+          nseSymb: nse,
+          bseSymb: bse,
+          category: row.Category || 'Others',
+          industry: row.Industry_Classification || 'Others',
+          issuerType: row.Issuer_Type || 'Others',
+          city: row.Corporate_Office_City || 'Others',
+          zone: row.Zone || 'Others'
+        };
+
+        // Standard index mappings
+        if (isin && isin !== 'NA' && isin !== 'nan') state.masterLookup[isin.toUpperCase()] = info;
+        if (nse && nse !== 'NA' && nse !== 'nan') state.masterLookup[nse.toUpperCase()] = info;
+        if (bse && bse !== 'NA' && bse !== 'nan') state.masterLookup[bse.toUpperCase()] = info;
+      });
+
+      // Add default entry for "Others"
+      state.masterLookup['OTHERS'] = {
+        companyName: 'Others / Unclassified',
+        isin: 'Others',
+        nseSymb: 'Others',
+        bseSymb: 'Others',
+        category: 'Small Cap',
+        industry: 'Others',
+        issuerType: 'Others',
+        city: 'Others',
+        zone: 'Others'
+      };
+    }
+
+    // Match Bhavcopy rows to Master Info
+    function mapBhavcopyToMaster(dataset) {
+      dataset.forEach(row => {
+        const isin = (row.ISIN || '').trim().toUpperCase();
+        const symbol = (row.SYMBOL || '').trim().toUpperCase();
+
+        // Robust Lookup Strategy
+        let match = null;
+        if (isin && state.masterLookup[isin]) match = state.masterLookup[isin];
+        else if (symbol && state.masterLookup[symbol]) match = state.masterLookup[symbol];
+        
+        // Swapped check
+        else if (symbol && state.masterLookup[symbol]) match = state.masterLookup[symbol];
+        else if (isin && state.masterLookup[isin]) match = state.masterLookup[isin];
+
+        // Default if not found
+        if (!match) {
+          if (symbol.includes('OTHERS') || isin.includes('OTHERS')) {
+            match = state.masterLookup['OTHERS'];
+          } else {
+            // Dynamically assign unmapped to Others category
+            match = {
+              companyName: row.SYMBOL || 'Unknown Company',
+              isin: row.ISIN || 'NA',
+              nseSymb: row.SYMBOL || 'NA',
+              bseSymb: 'NA',
+              category: 'Small Cap',
+              industry: 'Others',
+              issuerType: 'Others',
+              city: 'Others',
+              zone: 'Others'
+            };
+          }
+        }
+
+        // Attach parsed attributes to the row object for faster operations
+        row.companyName = match.companyName;
+        row.category = match.category;
+        row.industry = match.industry;
+        row.issuerType = match.issuerType;
+        row.city = match.city;
+        row.zone = match.zone;
+
+        // Parse numeric values
+        row.turnover = parseFloat(row.TtlTrfVal) || 0;
+        row.volume = parseFloat(row.TtlTradgVol) || 0;
+        row.closePrice = parseFloat(row.ClsPric) || 0;
+        
+        // Parse date object
+        const parts = row.TradDt.split('-');
+        if (parts.length === 3) {
+          row.parsedDateObj = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+          row.timestamp = row.parsedDateObj.getTime();
+        } else {
+          row.timestamp = 0;
+        }
+      });
+    }
+
+    // Set filters, tabs, selectors based on control_menu configurations
+    function initializeFiltersAndControls() {
+      // 1. Create filters and aggregation tabs based on control_menu.csv
+      const filtersBox = document.getElementById('dynamic-filters-box');
+      filtersBox.innerHTML = '';
+
+      const aggBtnGroup = document.getElementById('agg-btn-group');
+      // Remove any previously added dynamic buttons (keep default)
+      const defaultBtn = document.getElementById('btn-agg-default');
+      aggBtnGroup.innerHTML = '';
+      aggBtnGroup.appendChild(defaultBtn);
+
+      const chartXSelect = document.getElementById('chart-x-axis');
+      // Reset X Axis select
+      chartXSelect.innerHTML = '<option value="time">Time Period</option>';
+
+      state.parsedData.control.forEach(ctrl => {
+        const fieldName = ctrl.Menu_List; // E.g. Category, Zone, etc.
+        const label = ctrl.Labels; // E.g. Category, Zone
+
+        // Map column name internally to row fields
+        let dataField = '';
+        if (fieldName === 'Category') dataField = 'category';
+        else if (fieldName === 'Industry_Classification') dataField = 'industry';
+        else if (fieldName === 'Issuer_Type') dataField = 'issuerType';
+        else if (fieldName === 'Corporate_Office_City') dataField = 'city';
+        else if (fieldName === 'Zone') dataField = 'zone';
+
+        if (!dataField) return;
+
+        // Create filter dropdown
+        const filterWrapper = document.createElement('div');
+        filterWrapper.className = 'control-section';
+        filterWrapper.innerHTML = `
+          <div class="control-label">Filter ${label}</div>
+          <select id="filter-${dataField}" class="filter-select" onchange="applyFiltersAndRefresh()">
+            <option value="All">All ${label}s</option>
+          </select>
+        `;
+        filtersBox.appendChild(filterWrapper);
+        state.dynamicFilters[dataField] = 'All'; // Init state
+
+        // Create aggregation button
+        const btn = document.createElement('button');
+        btn.className = 'btn-group-btn';
+        btn.innerText = label;
+        btn.id = `btn-agg-${dataField}`;
+        btn.onclick = () => setAggDimension(dataField);
+        aggBtnGroup.appendChild(btn);
+
+        // Add to Chart X axis options
+        const option = document.createElement('option');
+        option.value = dataField;
+        option.innerText = label;
+        chartXSelect.appendChild(option);
+      });
+
+      // Populate filter option values dynamically from unique company master data
+      populateFilterOptions();
+    }
+
+    // Populate dynamic filter options from parsed company master values
+    function populateFilterOptions() {
+      const uniqueValues = {
+        category: new Set(),
+        industry: new Set(),
+        issuerType: new Set(),
+        city: new Set(),
+        zone: new Set()
+      };
+
+      state.parsedData.master.forEach(row => {
+        if (row.Category) uniqueValues.category.add(row.Category.trim());
+        if (row.Industry_Classification) uniqueValues.industry.add(row.Industry_Classification.trim());
+        if (row.Issuer_Type) uniqueValues.issuerType.add(row.Issuer_Type.trim());
+        if (row.Corporate_Office_City) uniqueValues.city.add(row.Corporate_Office_City.trim());
+        if (row.Zone) uniqueValues.zone.add(row.Zone.trim());
+      });
+
+      Object.entries(uniqueValues).forEach(([field, set]) => {
+        const select = document.getElementById(`filter-${field}`);
+        if (!select) return;
+        
+        // Sort and add values
+        const sortedVals = Array.from(set).sort();
+        sortedVals.forEach(val => {
+          if (val && val !== 'NA') {
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.innerText = val;
+            select.appendChild(opt);
+          }
+        });
+      });
+    }
+
+    // Core Controls Toggles
+    function setMode(mode) {
+      state.currentMode = mode;
+      
+      // Update Mode button states
+      const modeGroup = document.getElementById('mode-btn-group');
+      Array.from(modeGroup.children).forEach(btn => {
+        btn.classList.toggle('active', btn.innerText.toLowerCase().includes(mode));
+      });
+
+      // Setup Time Grouping buttons based on Mode
+      setupTimeGroupingButtons();
+
+      // Reset dates range slider and defaults based on current loaded CSV
+      setupDateRangeSlider();
+
+      // Clear expands
+      state.expandedRows.clear();
+      state.expandedSubRows.clear();
+
+      // Refresh view
+      applyFiltersAndRefresh();
+    }
+
+    function setAggDimension(dimension) {
+      state.currentAggDimension = dimension;
+
+      // Update Aggregation Tab active styles
+      const aggGroup = document.getElementById('agg-btn-group');
+      Array.from(aggGroup.children).forEach(btn => {
+        let btnIdMatch = false;
+        if (dimension === 'default' && btn.id === 'btn-agg-default') btnIdMatch = true;
+        else if (btn.id === `btn-agg-${dimension}`) btnIdMatch = true;
+        btn.classList.toggle('active', btnIdMatch);
+      });
+
+      // Clear expands
+      state.expandedRows.clear();
+      state.expandedSubRows.clear();
+
+      // Refresh
+      applyFiltersAndRefresh();
+    }
+
+    function setTimeGrouping(group) {
+      state.currentTimeGrouping = group;
+
+      // Update time aggregation active styles
+      const timeGroup = document.getElementById('time-group-btn-group');
+      Array.from(timeGroup.children).forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.group === group);
+      });
+
+      // Refresh
+      applyFiltersAndRefresh();
+    }
+
+    // Time-based aggregation configurations
+    function setupTimeGroupingButtons() {
+      const container = document.getElementById('time-group-btn-group');
+      container.innerHTML = '';
+
+      let options = [];
+      if (state.currentMode === 'daily') {
+        options = [
+          { value: 'default', label: 'Daily' },
+          { value: 'weekly', label: 'Weekly' },
+          { value: 'semimonthly', label: 'Semi-Monthly' },
+          { value: 'monthly', label: 'Monthly' },
+          { value: 'quarterly', label: 'Quarterly' }
+        ];
+        state.currentTimeGrouping = 'default';
+      } else {
+        options = [
+          { value: 'default', label: 'Monthly' },
+          { value: 'quarterly', label: 'Quarterly' },
+          { value: 'halfyearly', label: 'Half-Yearly' },
+          { value: 'fy', label: 'Financial Year' },
+          { value: 'cy', label: 'Calendar Year' }
+        ];
+        state.currentTimeGrouping = 'default';
+      }
+
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = `btn-group-btn ${opt.value === state.currentTimeGrouping ? 'active' : ''}`;
+        btn.innerText = opt.label;
+        btn.dataset.group = opt.value;
+        btn.onclick = () => setTimeGrouping(opt.value);
+        container.appendChild(btn);
+      });
+    }
+
+    // Setup Date range slider parameters dynamically based on unique sorted dates in loaded CSV
+    function setupDateRangeSlider() {
+      const dataset = state.currentMode === 'daily' ? state.parsedData.daily : state.parsedData.monthly;
+      
+      // Get unique timestamps sorted
+      const tsSet = new Set();
+      dataset.forEach(row => {
+        if (row.timestamp) tsSet.add(row.timestamp);
+      });
+
+      state.dateList = Array.from(tsSet).sort((a, b) => a - b);
+      
+      if (state.dateList.length === 0) return;
+
+      const sliderMin = document.getElementById('slider-min');
+      const sliderMax = document.getElementById('slider-max');
+
+      // Set ranges
+      sliderMin.min = 0;
+      sliderMin.max = state.dateList.length - 1;
+      sliderMax.min = 0;
+      sliderMax.max = state.dateList.length - 1;
+
+      // Set defaults according to requirements:
+      // "daily data for current and last month will be shown by default. For month it will be for 15 months."
+      let defaultStartIdx = 0;
+      let defaultEndIdx = state.dateList.length - 1;
+
+      const maxDate = new Date(state.dateList[defaultEndIdx]);
+
+      if (state.currentMode === 'daily') {
+        // Find date starting from 1st of the previous month of maxDate
+        const targetYear = maxDate.getFullYear();
+        const targetMonth = maxDate.getMonth() - 1; // Last month
+        const thresholdDate = new Date(targetYear, targetMonth, 1);
+        
+        defaultStartIdx = state.dateList.findIndex(ts => ts >= thresholdDate.getTime());
+        if (defaultStartIdx === -1) defaultStartIdx = 0;
+      } else {
+        // Last 15 months
+        const thresholdDate = new Date(maxDate.getFullYear(), maxDate.getMonth() - 14, 1);
+        defaultStartIdx = state.dateList.findIndex(ts => ts >= thresholdDate.getTime());
+        if (defaultStartIdx === -1) defaultStartIdx = 0;
+      }
+
+      sliderMin.value = defaultStartIdx;
+      sliderMax.value = defaultEndIdx;
+      
+      state.activeRange.minIdx = defaultStartIdx;
+      state.activeRange.maxIdx = defaultEndIdx;
+
+      updateSliderVisuals();
+    }
+
+    function updateSliderVisuals() {
+      if (state.dateList.length === 0) return;
+
+      const minIdx = parseInt(document.getElementById('slider-min').value);
+      const maxIdx = parseInt(document.getElementById('slider-max').value);
+
+      const minDate = new Date(state.dateList[minIdx]);
+      const maxDate = new Date(state.dateList[maxIdx]);
+
+      // Formatted range text
+      const fmt = (d) => {
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${dd}-${mm}-${yyyy}`;
+      };
+
+      document.getElementById('slider-range-text').innerText = `${fmt(minDate)} to ${fmt(maxDate)}`;
+
+      // Update color fill on custom track
+      const sliderMin = document.getElementById('slider-min');
+      const sliderMax = document.getElementById('slider-max');
+      const track = document.getElementById('slider-track');
+      
+      const totalSteps = state.dateList.length - 1;
+      const leftPercent = (minIdx / totalSteps) * 100;
+      const rightPercent = (maxIdx / totalSteps) * 100;
+
+      track.style.left = `${leftPercent}%`;
+      track.style.width = `${rightPercent - leftPercent}%`;
+    }
+
+    // Handle min range change and prevent overlapping
+    function slideMin() {
+      const minInput = document.getElementById('slider-min');
+      const maxInput = document.getElementById('slider-max');
+      let val1 = parseInt(minInput.value);
+      let val2 = parseInt(maxInput.value);
+
+      if (val1 >= val2) {
+        minInput.value = val2 - 1;
+        val1 = val2 - 1;
+      }
+
+      state.activeRange.minIdx = val1;
+      updateSliderVisuals();
+      applyFiltersAndRefresh();
+    }
+
+    // Handle max range change and prevent overlapping
+    function slideMax() {
+      const minInput = document.getElementById('slider-min');
+      const maxInput = document.getElementById('slider-max');
+      let val1 = parseInt(minInput.value);
+      let val2 = parseInt(maxInput.value);
+
+      if (val2 <= val1) {
+        maxInput.value = val1 + 1;
+        val2 = val1 + 1;
+      }
+
+      state.activeRange.maxIdx = val2;
+      updateSliderVisuals();
+      applyFiltersAndRefresh();
+    }
+
+    // Read dropdown filter values
+    function applyFiltersAndRefresh() {
+      // Fetch dynamic filter values
+      Object.keys(state.dynamicFilters).forEach(field => {
+        const select = document.getElementById(`filter-${field}`);
+        if (select) {
+          state.dynamicFilters[field] = select.value;
+        }
+      });
+
+      // Clear expanded list to avoid rendering errors on dataset shifts
+      // Keep them only if rows actually exist
+      
+      // Update Table & Chart
+      renderAggregationTable();
+      updateChart();
+    }
+
+    // Helper functions to get Time Aggregation Key
+    function getPeriodKey(dateObj) {
+      if (!dateObj) return 'N/A';
+      
+      const year = dateObj.getFullYear();
+      const month = dateObj.getMonth();
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      const formatMonday = (d) => {
+        // Get Monday
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        const mon = new Date(d);
+        mon.setDate(diff);
+        
+        const dd = String(mon.getDate()).padStart(2, '0');
+        const mm = String(mon.getMonth() + 1).padStart(2, '0');
+        return `W/C ${dd}-${mm}-${mon.getFullYear()}`;
+      };
+
+      if (state.currentMode === 'daily') {
+        switch(state.currentTimeGrouping) {
+          case 'weekly':
+            return formatMonday(dateObj);
+          case 'semimonthly':
+            const isFirstHalf = dateObj.getDate() <= 15;
+            return `${monthNames[month]} ${year} (${isFirstHalf ? '1-15' : '16+'})`;
+          case 'monthly':
+            return `${monthNames[month]} ${year}`;
+          case 'quarterly':
+            const q = Math.floor(month / 3) + 1;
+            return `${year} Q${q}`;
+          default:
+            // Daily format DD-MM-YYYY
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            return `${dd}-${mm}-${year}`;
+        }
+      } else {
+        // Monthly mode
+        switch(state.currentTimeGrouping) {
+          case 'quarterly':
+            const q = Math.floor(month / 3) + 1;
+            return `${year} Q${q}`;
+          case 'halfyearly':
+            const h = month < 6 ? 'H1' : 'H2';
+            return `${year} ${h}`;
+          case 'fy':
+            if (month >= 3) {
+              return `FY ${year}-${String(year + 1).slice(-2)}`;
+            } else {
+              return `FY ${year - 1}-${String(year).slice(-2)}`;
+            }
+          case 'cy':
+            return `CY ${year}`;
+          default:
+            return `${monthNames[month]} ${year}`;
+        }
+      }
+    }
+
+    // Number formating utils
+    function formatTurnover(val) {
+      // Convert raw turnover (TtlTrfVal) to Crores (1 Cr = 10,000,000)
+      const cr = val / 10000000;
+      return `₹${cr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Cr`;
+    }
+
+    function formatVolume(val) {
+      // Format volume in Lakhs or Millions
+      if (val >= 1000000) {
+        const mil = val / 1000000;
+        return `${mil.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+      }
+      const lakhs = val / 100000;
+      return `${lakhs.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L`;
+    }
+
+    function formatPrice(val) {
+      return `₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // Filter raw rows based on current selected parameters
+    function getFilteredRows() {
+      const dataset = state.currentMode === 'daily' ? state.parsedData.daily : state.parsedData.monthly;
+      if (!dataset) return [];
+
+      const minTS = state.dateList[state.activeRange.minIdx] || 0;
+      const maxTS = state.dateList[state.activeRange.maxIdx] || 0;
+      
+      const search = document.getElementById('company-search').value.toLowerCase().trim();
+
+      return dataset.filter(row => {
+        // Date range filter
+        if (!row.timestamp || row.timestamp < minTS || row.timestamp > maxTS) return false;
+
+        // Dynamic select filters
+        if (state.dynamicFilters.category !== 'All' && row.category !== state.dynamicFilters.category) return false;
+        if (state.dynamicFilters.industry !== 'All' && row.industry !== state.dynamicFilters.industry) return false;
+        if (state.dynamicFilters.issuerType !== 'All' && row.issuerType !== state.dynamicFilters.issuerType) return false;
+        if (state.dynamicFilters.city !== 'All' && row.city !== state.dynamicFilters.city) return false;
+        if (state.dynamicFilters.zone !== 'All' && row.zone !== state.dynamicFilters.zone) return false;
+
+        // Text Search
+        if (search) {
+          const compName = (row.companyName || '').toLowerCase();
+          const symbol = (row.SYMBOL || '').toLowerCase();
+          const isin = (row.ISIN || '').toLowerCase();
+          if (!compName.includes(search) && !symbol.includes(search) && !isin.includes(search)) return false;
+        }
+
+        return true;
+      });
+    }
+
+    // Renders the main aggregated table content (Level 1)
+    function renderAggregationTable() {
+      const filtered = getFilteredRows();
+      const tbody = document.getElementById('table-body');
+      const headers = document.getElementById('table-headers');
+      
+      tbody.innerHTML = '';
+      
+      // Determine columns based on aggregation mode
+      const isDefaultCompanyAgg = state.currentAggDimension === 'default';
+
+      if (isDefaultCompanyAgg) {
+        // Aggregation grouping: Time Period
+        headers.innerHTML = `
+          <th style="width: 50px;"></th>
+          <th>Time Period</th>
+          <th class="number-col">Total Turnover</th>
+          <th class="number-col">Traded Volume</th>
+          <th class="number-col">Avg Close Price</th>
+          <th class="number-col" style="width: 150px;">Company Count</th>
+        `;
+
+        // Group rows by TimePeriod Key
+        const groups = {};
+        filtered.forEach(row => {
+          const key = getPeriodKey(row.parsedDateObj);
+          if (!groups[key]) {
+            groups[key] = {
+              key: key,
+              turnover: 0,
+              volume: 0,
+              weightedPriceSum: 0,
+              symbols: new Set(),
+              rawRows: []
+            };
+          }
+          groups[key].turnover += row.turnover;
+          groups[key].volume += row.volume;
+          groups[key].weightedPriceSum += (row.closePrice * row.volume);
+          groups[key].symbols.add(row.SYMBOL);
+          groups[key].rawRows.push(row);
+        });
+
+        // Convert to array and sort by date sequence
+        const groupedArray = Object.values(groups).sort((a, b) => {
+          // Sort based on the first occurrence's timestamp
+          const aTime = a.rawRows[0]?.timestamp || 0;
+          const bTime = b.rawRows[0]?.timestamp || 0;
+          return bTime - aTime; // descending
+        });
+
+        document.getElementById('table-row-count').innerText = `Showing ${groupedArray.length} time periods`;
+
+        if (groupedArray.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 40px; color: var(--text-muted);">No records match the active filters.</td></tr>`;
+          return;
+        }
+
+        groupedArray.forEach(group => {
+          const rowId = `row-time-${group.key.replace(/\s+/g, '-')}`;
+          const isExpanded = state.expandedRows.has(rowId);
+          
+          const avgPrice = group.volume > 0 ? (group.weightedPriceSum / group.volume) : 0;
+
+          const tr = document.createElement('tr');
+          tr.className = `clickable-row ${isExpanded ? 'expanded' : ''}`;
+          tr.onclick = () => toggleRow(rowId);
+
+          tr.innerHTML = `
+            <td><span class="expand-icon">▸</span></td>
+            <td style="font-weight: 600;">${group.key}</td>
+            <td class="number-col font-semibold positive">${formatTurnover(group.turnover)}</td>
+            <td class="number-col">${formatVolume(group.volume)}</td>
+            <td class="number-col">${formatPrice(avgPrice)}</td>
+            <td class="number-col"><span class="badge badge-neutral">${group.symbols.size} Companies</span></td>
+          `;
+
+          tbody.appendChild(tr);
+
+          // If expanded, render sub-table of companies (Level 2)
+          if (isExpanded) {
+            renderCompanySubTable(group, tr, rowId);
+          }
+        });
+
+      } else {
+        // Grouping Dimension clicked (e.g. Category, Zone)
+        const dimLabel = document.getElementById(`btn-agg-${state.currentAggDimension}`).innerText;
+        headers.innerHTML = `
+          <th style="width: 50px;"></th>
+          <th>Aggregated Dimension: ${dimLabel}</th>
+          <th class="number-col">Total Turnover</th>
+          <th class="number-col">Traded Volume</th>
+          <th class="number-col">Avg Close Price</th>
+          <th class="number-col" style="width: 150px;">Companies Traded</th>
+        `;
+
+        // Group rows by Dimension Key
+        const groups = {};
+        filtered.forEach(row => {
+          const key = row[state.currentAggDimension] || 'Others';
+          if (!groups[key]) {
+            groups[key] = {
+              key: key,
+              turnover: 0,
+              volume: 0,
+              weightedPriceSum: 0,
+              symbols: new Set(),
+              rawRows: []
+            };
+          }
+          groups[key].turnover += row.turnover;
+          groups[key].volume += row.volume;
+          groups[key].weightedPriceSum += (row.closePrice * row.volume);
+          groups[key].symbols.add(row.SYMBOL);
+          groups[key].rawRows.push(row);
+        });
+
+        const groupedArray = Object.values(groups).sort((a, b) => b.turnover - a.turnover); // Sort by turnover descending
+
+        document.getElementById('table-row-count').innerText = `Showing ${groupedArray.length} dimension classifications`;
+
+        if (groupedArray.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 40px; color: var(--text-muted);">No records match the active filters.</td></tr>`;
+          return;
+        }
+
+        groupedArray.forEach(group => {
+          const rowId = `row-dim-${group.key.replace(/\s+/g, '-')}`;
+          const isExpanded = state.expandedRows.has(rowId);
+          const avgPrice = group.volume > 0 ? (group.weightedPriceSum / group.volume) : 0;
+
+          const tr = document.createElement('tr');
+          tr.className = `clickable-row ${isExpanded ? 'expanded' : ''}`;
+          tr.onclick = () => toggleRow(rowId);
+
+          tr.innerHTML = `
+            <td><span class="expand-icon">▸</span></td>
+            <td style="font-weight: 600;">${group.key}</td>
+            <td class="number-col font-semibold positive">${formatTurnover(group.turnover)}</td>
+            <td class="number-col">${formatVolume(group.volume)}</td>
+            <td class="number-col">${formatPrice(avgPrice)}</td>
+            <td class="number-col"><span class="badge badge-neutral">${group.symbols.size} Companies</span></td>
+          `;
+
+          tbody.appendChild(tr);
+
+          if (isExpanded) {
+            renderCompanySubTable(group, tr, rowId);
+          }
+        });
+      }
+    }
+
+    // Toggle expand/collapse at Level 1 table
+    function toggleRow(rowId) {
+      if (state.expandedRows.has(rowId)) {
+        state.expandedRows.delete(rowId);
+      } else {
+        state.expandedRows.add(rowId);
+      }
+      renderAggregationTable();
+    }
+
+    // Level 2 Sub-Table listing underlying companies for selected Date/Month or Dimension
+    function renderCompanySubTable(parentGroup, parentTr, rowId) {
+      const tbody = document.getElementById('table-body');
+      
+      // Aggregate rows by Company inside this parent group
+      const compGroups = {};
+      parentGroup.rawRows.forEach(row => {
+        const symbol = row.SYMBOL;
+        if (!compGroups[symbol]) {
+          compGroups[symbol] = {
+            symbol: symbol,
+            name: row.companyName,
+            isin: row.ISIN,
+            turnover: 0,
+            volume: 0,
+            closePrice: 0,
+            weightedPriceSum: 0,
+            count: 0,
+            category: row.category,
+            rawRows: []
+          };
+        }
+        compGroups[symbol].turnover += row.turnover;
+        compGroups[symbol].volume += row.volume;
+        compGroups[symbol].weightedPriceSum += (row.closePrice * row.volume);
+        compGroups[symbol].count++;
+        compGroups[symbol].rawRows.push(row);
+      });
+
+      // Sort companies by Turnover
+      const sortedComps = Object.values(compGroups).sort((a, b) => b.turnover - a.turnover);
+
+      // Create new table row wrapper
+      const subRow = document.createElement('tr');
+      subRow.className = 'sub-table-row';
+      
+      let badgeClass = 'badge-neutral';
+      
+      const rowsHtml = sortedComps.map(comp => {
+        const subRowId = `${rowId}-comp-${comp.symbol}`;
+        const isSubExpanded = state.expandedSubRows.has(subRowId);
+        
+        let capBadge = '';
+        if (comp.category.toLowerCase().includes('large')) capBadge = `<span class="badge badge-largecap">Large Cap</span>`;
+        else if (comp.category.toLowerCase().includes('mid')) capBadge = `<span class="badge badge-midcap">Mid Cap</span>`;
+        else if (comp.category.toLowerCase().includes('small')) capBadge = `<span class="badge badge-smallcap">Small Cap</span>`;
+        else capBadge = `<span class="badge badge-neutral">${comp.category}</span>`;
+
+        const avgPrice = comp.volume > 0 ? (comp.weightedPriceSum / comp.volume) : comp.closePrice;
+
+        let level3Html = '';
+        if (isSubExpanded) {
+          level3Html = `
+            <tr class="sub-table-row">
+              <td colspan="5" class="nested-cell">
+                <div class="tag-table-wrap">
+                  <h4 style="font-size:0.8rem; text-transform:uppercase; color:var(--accent-secondary); margin-bottom:8px; font-weight:600;">
+                    Peer Group Aggregations (tag_menu.csv)
+                  </h4>
+                  <div class="tag-compare-grid">
+                    ${renderTagComparisons(comp, parentGroup.rawRows)}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+
+        return `
+          <tr class="clickable-row ${isSubExpanded ? 'expanded' : ''}" onclick="toggleSubRow(event, '${subRowId}')">
+            <td style="padding-left:24px; width:40px;"><span class="expand-icon">▸</span></td>
+            <td>
+              <div style="font-weight:600; color:white;">${comp.name}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${comp.symbol} | ISIN: ${comp.isin}</div>
+            </td>
+            <td class="number-col font-medium text-main">${formatTurnover(comp.turnover)}</td>
+            <td class="number-col">${formatVolume(comp.volume)}</td>
+            <td class="number-col">${formatPrice(avgPrice)}</td>
+            <td class="number-col">${capBadge}</td>
+          </tr>
+          ${level3Html}
+        `;
+      }).join('');
+
+      subRow.innerHTML = `
+        <td colspan="6" class="nested-cell">
+          <div class="nested-table-wrap">
+            <table style="width:100%;">
+              <thead>
+                <tr>
+                  <th style="width: 40px;"></th>
+                  <th>Company Info</th>
+                  <th class="number-col">Turnover</th>
+                  <th class="number-col">Volume</th>
+                  <th class="number-col">Avg Price</th>
+                  <th class="number-col" style="width: 140px;">Market Cap</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </td>
+      `;
+
+      // Insert immediately after parent row
+      parentTr.parentNode.insertBefore(subRow, parentTr.nextSibling);
+    }
+
+    // Toggle expand/collapse at Level 2 company sub-tables
+    function toggleSubRow(event, subRowId) {
+      event.stopPropagation(); // Avoid triggering Level 1 collapse
+      if (state.expandedSubRows.has(subRowId)) {
+        state.expandedSubRows.delete(subRowId);
+      } else {
+        state.expandedSubRows.add(subRowId);
+      }
+      renderAggregationTable();
+    }
+
+    // Level 3: Renders comparison peer data based on company attributes defined in tag_menu.csv
+    function renderTagComparisons(companyInfo, scopeRows) {
+      if (state.parsedData.tag.length === 0) {
+        return `<div style="font-size:0.85rem; color:var(--text-muted); padding:4px;">No attributes loaded in tag_menu.csv for this prefix.</div>`;
+      }
+
+      // Map dynamic comparison tags from tag_menu
+      return state.parsedData.tag.map(tagConf => {
+        const fieldName = tagConf.Menu_List;
+        const label = tagConf.Labels;
+        
+        let dataField = '';
+        if (fieldName === 'Category') dataField = 'category';
+        else if (fieldName === 'Industry_Classification') dataField = 'industry';
+        else if (fieldName === 'Issuer_Type') dataField = 'issuerType';
+        else if (fieldName === 'Zone') dataField = 'zone';
+
+        if (!dataField) return '';
+
+        // Value of the active company for this tag field
+        const companyTagValue = companyInfo.rawRows[0]?.[dataField] || 'Others';
+
+        // Calculate total turnover of other companies sharing this classification value, inside our current scope
+        let sumTurnoverInScope = 0;
+        scopeRows.forEach(row => {
+          if (row[dataField] === companyTagValue) {
+            sumTurnoverInScope += row.turnover;
+          }
+        });
+
+        return `
+          <div class="tag-compare-card">
+            <div class="tag-compare-title">${label}</div>
+            <div class="tag-compare-value" title="${companyTagValue}">${companyTagValue}</div>
+            <div class="tag-compare-stats">Total: ${formatTurnover(sumTurnoverInScope)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Renders and updates Chart.js instance with selected X/Y axes configuration
+    function updateChart() {
+      const filtered = getFilteredRows();
+      const xAxisVar = document.getElementById('chart-x-axis').value;
+      const yAxisVar = document.getElementById('chart-y-axis').value;
+
+      // Group data by selected X variable
+      const groups = {};
+
+      filtered.forEach(row => {
+        let key = '';
+        if (xAxisVar === 'time') {
+          key = getPeriodKey(row.parsedDateObj);
+        } else {
+          key = row[xAxisVar] || 'Others';
+        }
+
+        if (!groups[key]) {
+          groups[key] = {
+            key: key,
+            turnover: 0,
+            volume: 0,
+            weightedPriceSum: 0,
+            priceWeight: 0,
+            timestamp: row.timestamp || 0
+          };
+        }
+
+        groups[key].turnover += row.turnover;
+        groups[key].volume += row.volume;
+        groups[key].weightedPriceSum += (row.closePrice * row.volume);
+        groups[key].priceWeight += row.volume;
+      });
+
+      // Sort data
+      let sortedData = Object.values(groups);
+      if (xAxisVar === 'time') {
+        // Sort chronologically (ascending for chart)
+        sortedData.sort((a, b) => a.timestamp - b.timestamp);
+      } else {
+        // Sort by value descending
+        sortedData.sort((a, b) => b.turnover - a.turnover);
+      }
+
+      // Generate labels & values lists
+      const labels = sortedData.map(d => d.key);
+      const dataPoints = sortedData.map(d => {
+        if (yAxisVar === 'turnover') {
+          return d.turnover / 10000000; // in Crores
+        } else if (yAxisVar === 'volume') {
+          return d.volume; // raw volume
+        } else {
+          // Average Close Price
+          return d.priceWeight > 0 ? (d.weightedPriceSum / d.priceWeight) : 0;
+        }
+      });
+
+      const yLabel = yAxisVar === 'turnover' ? 'Turnover (Cr ₹)' : (yAxisVar === 'volume' ? 'Traded Volume' : 'Avg Close Price (₹)');
+
+      // Chart.js Drawing Configuration
+      const ctx = document.getElementById('analyticsChart').getContext('2d');
+
+      if (state.chartInstance) {
+        state.chartInstance.destroy();
+      }
+
+      // Time uses Line chart, Dimensions use Bar chart
+      const chartType = xAxisVar === 'time' ? 'line' : 'bar';
+
+      state.chartInstance = new Chart(ctx, {
+        type: chartType,
+        data: {
+          labels: labels,
+          datasets: [{
+            label: yLabel,
+            data: dataPoints,
+            borderColor: '#6366f1',
+            backgroundColor: chartType === 'line' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(6, 182, 212, 0.7)',
+            borderWidth: 2.5,
+            fill: chartType === 'line',
+            tension: 0.25,
+            pointRadius: chartType === 'line' ? 3.5 : 0,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#06b6d4'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              titleFont: { family: 'Outfit', size: 13, weight: '600' },
+              bodyFont: { family: 'Outfit', size: 13 },
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              padding: 12,
+              callbacks: {
+                label: function(context) {
+                  let val = context.parsed.y;
+                  if (yAxisVar === 'turnover') return `Turnover: ₹${val.toFixed(2)} Cr`;
+                  if (yAxisVar === 'volume') return `Volume: ${formatVolume(val)}`;
+                  return `Price: ₹${val.toFixed(2)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.04)'
+              },
+              ticks: {
+                color: '#9ca3af',
+                font: { family: 'Outfit', size: 11 }
+              }
+            },
+            y: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.04)'
+              },
+              ticks: {
+                color: '#9ca3af',
+                font: { family: 'Outfit', size: 11 }
+              }
+            }
+          }
+        }
+      });
+    }
+
+  </script>
+</body>
+</html>
