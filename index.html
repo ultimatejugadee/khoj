@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khoj Analytics Hub</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #090d16;
+      --bg-gradient-end: #121829;
+      --card-bg: rgba(22, 28, 45, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-primary: #6366f1; /* Indigo */
+      --accent-secondary: #06b6d4; /* Cyan */
+      --accent-purple: #a855f7; /* Purple */
+      --transition-speed: 0.3s;
+      --logo-text-gradient-start: #ffffff;
+      --logo-text-gradient-end: #c7d2fe;
+      --search-bg: rgba(10, 14, 26, 0.6);
+      --search-border: rgba(255, 255, 255, 0.08);
+      --suggestion-bg: rgba(255, 255, 255, 0.05);
+      --suggestion-hover-bg: rgba(99, 102, 241, 0.15);
+      --suggestion-text: #c7d2fe;
+    }
+
+    body.light-theme {
+      --bg-gradient-start: #f8fafc;
+      --bg-gradient-end: #e2e8f0;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(15, 23, 42, 0.08);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #0891b2;
+      --accent-purple: #9333ea;
+      --logo-text-gradient-start: #0f172a;
+      --logo-text-gradient-end: #4f46e5;
+      --search-bg: rgba(255, 255, 255, 0.9);
+      --search-border: rgba(15, 23, 42, 0.12);
+      --suggestion-bg: rgba(0, 0, 0, 0.05);
+      --suggestion-hover-bg: rgba(79, 70, 229, 0.1);
+      --suggestion-text: #4f46e5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition-speed);
+    }
+
+    /* Header Styles */
+    header {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .logo-text h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--logo-text-gradient-start), var(--logo-text-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Theme Toggle */
+    .theme-toggle-btn {
+      background: var(--suggestion-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: all var(--transition-speed);
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--suggestion-hover-bg);
+      border-color: var(--accent-primary);
+      transform: scale(1.05);
+    }
+
+    .theme-icon {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.5;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Main Content */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px 80px 24px;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Search Area */
+    .search-section {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .search-title h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, var(--text-main), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .search-title p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    .search-box-container {
+      position: relative;
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-icon-svg {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 16px 16px 50px;
+      font-size: 1.05rem;
+      font-family: inherit;
+      color: var(--text-main);
+      background: var(--search-bg);
+      border: 1px solid var(--search-border);
+      border-radius: 30px;
+      outline: none;
+      transition: all var(--transition-speed);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 4px 25px rgba(99, 102, 241, 0.25);
+    }
+
+    .search-btn {
+      padding: 0 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: white;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      transition: all var(--transition-speed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+    }
+
+    .search-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Suggestions */
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .suggestion-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      align-self: center;
+    }
+
+    .suggestion-tag {
+      font-size: 0.82rem;
+      padding: 6px 14px;
+      background: var(--suggestion-bg);
+      color: var(--suggestion-text);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      font-weight: 500;
+    }
+
+    .suggestion-tag:hover {
+      background: var(--suggestion-hover-bg);
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+
+    /* Card Grid */
+    .grid-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      transition: opacity var(--transition-speed), transform var(--transition-speed);
+    }
+
+    /* Card Styling */
+    .dashboard-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      backdrop-filter: blur(12px);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      position: relative;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    /* Neon Gradient Border Hover Effect */
+    .dashboard-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-purple));
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 0;
+    }
+
+    .dashboard-card-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
+      border-color: transparent;
+    }
+
+    .dashboard-card:hover::before {
+      opacity: 0.15;
+    }
+
+    /* Card Icon */
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-icon-container {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-primary);
+      transition: all var(--transition-speed);
+    }
+
+    .dashboard-card:hover .card-icon-container {
+      background: var(--accent-primary);
+      color: white;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .card-icon-svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .arrow-icon-svg {
+      width: 20px;
+      height: 20px;
+      color: var(--text-muted);
+      transition: transform var(--transition-speed), color var(--transition-speed);
+    }
+
+    .dashboard-card:hover .arrow-icon-svg {
+      transform: translateX(5px);
+      color: var(--accent-secondary);
+    }
+
+    /* Card Details */
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Expandable details list */
+    .card-details-list {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transform: translateY(10px);
+      transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 0;
+    }
+
+    body.light-theme .card-details-list {
+      border-top-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-card:hover .card-details-list {
+      opacity: 1;
+      max-height: 260px; /* high enough to fit content */
+      transform: translateY(0);
+      padding-top: 16px;
+      margin-top: 4px;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .detail-bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-secondary);
+      flex-shrink: 0;
+    }
+
+    /* No search results view */
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .no-results-icon {
+      width: 48px;
+      height: 48px;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .fade-out {
+      opacity: 0.15;
+      transform: scale(0.98);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">K</div>
+      <div class="logo-text">
+        <h1>Khoj Hub</h1>
+        <p>Market Intelligence Engine</p>
+      </div>
+    </div>
+
+    <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+      <!-- Moon Icon -->
+      <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+      <!-- Sun Icon -->
+      <svg class="theme-icon sun-icon hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+      </svg>
+    </button>
+  </header>
+
+  <!-- Main Content Area -->
+  <main>
+    
+    <!-- Search Section -->
+    <div class="search-section">
+      <div class="search-title">
+        <h2>Explore Khoj Repository</h2>
+        <p>Search companies, symbols, features or tool titles</p>
+      </div>
+
+      <div class="search-box-container">
+        <div class="search-input-wrapper">
+          <svg class="search-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input type="text" id="repo-search" class="search-input" placeholder="Type company symbol (e.g. RELIANCE, TCS) or tool keyword..." oninput="handleSearchInput(event)" onkeydown="handleSearchKey(event)">
+        </div>
+        <button class="search-btn" onclick="triggerSearchRedirect()">
+          Search
+        </button>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="suggestions">
+        <span class="suggestion-label">Suggestions:</span>
+        <span class="suggestion-tag" onclick="prefillSearch('RELIANCE')">RELIANCE</span>
+        <span class="suggestion-tag" onclick="prefillSearch('TCS')">TCS</span>
+        <span class="suggestion-tag" onclick="prefillSearch('AMFI')">AMFI Sector</span>
+        <span class="suggestion-tag" onclick="prefillSearch('Turnover')">Turnover</span>
+        <span class="suggestion-tag" onclick="prefillSearch('Charts')">Charts</span>
+      </div>
+    </div>
+
+    <!-- Tool Cards Grid -->
+    <div class="grid-container" id="cards-grid">
+      
+      <!-- Card: Historial & Analytical Data -->
+      <a href="javascript:void(0)" class="dashboard-card" id="card-turnover" onclick="handleCardClick('turnover_assement.html')">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Historial & Analytical Data</div>
+          
+          <div class="card-desc">
+            Load daily/monthly bhavcopy and analyze traded volumes, close prices, and turnover metrics. Group by classifications with Chart.js trend visualization.
+          </div>
+
+          <!-- Hover Details list -->
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Daily & Monthly Analytics:</strong> Granular time-series switching</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Dynamic Dimensions:</strong> Group by category, industry, zone, city</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Trend Charting:</strong> Visualize turnover, volume, and prices</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Tag Hierarchies:</strong> Expand and compare nested AMFI classifications</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Offline Ingestion:</strong> Drag-and-drop parser for local CSV files</span>
+            </div>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- No results container -->
+    <div class="no-results" id="no-results-box">
+      <svg class="no-results-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3>No matching tools found</h3>
+      <p>Try searching for "RELIANCE", "Charts", "AMFI", or "Turnover".</p>
+    </div>
+
+  </main>
+
+  <script>
+    // Tool details and keywords for the search matching
+    const TOOLS = [
+      {
+        id: 'card-turnover',
+        url: 'turnover_assement.html',
+        keywords: [
+          'historial', 'historical', 'analytical', 'data', 'turnover', 'bhavcopy', 
+          'volume', 'price', 'market', 'stock', 'chart', 'graph', 'trend', 
+          'amfi', 'category', 'industry', 'classification', 'zone', 'city',
+          'daily', 'monthly', 'ingestion', 'csv'
+        ]
+      }
+    ];
+
+    // Theme Management
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-theme');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      syncThemeIcons(isLight);
+    }
+
+    function syncThemeIcons(isLight) {
+      const sunIcon = document.querySelector('.sun-icon');
+      const moonIcon = document.querySelector('.moon-icon');
+      if (sunIcon && moonIcon) {
+        if (isLight) {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      }
+    }
+
+    // Initialize Theme early
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+      }
+    })();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      syncThemeIcons(savedTheme === 'light');
+    });
+
+    // Search and Suggestion Handling
+    function prefillSearch(term) {
+      const input = document.getElementById('repo-search');
+      input.value = term;
+      input.focus();
+      // Trigger matching
+      matchCards(term);
+    }
+
+    function handleSearchInput(e) {
+      matchCards(e.target.value);
+    }
+
+    function handleSearchKey(e) {
+      if (e.key === 'Enter') {
+        triggerSearchRedirect();
+      }
+    }
+
+    // Filters cards on the page. Since we have 1 card, if the query doesn't match
+    // any keywords or the title, we fade it and show "No matching tools found".
+    function matchCards(query) {
+      const cleanQuery = query.toLowerCase().trim();
+      const cardsGrid = document.getElementById('cards-grid');
+      const noResults = document.getElementById('no-results-box');
+      
+      if (!cleanQuery) {
+        // Reset state
+        TOOLS.forEach(tool => {
+          const card = document.getElementById(tool.id);
+          if (card) card.classList.remove('fade-out');
+        });
+        cardsGrid.style.display = 'flex';
+        noResults.style.display = 'none';
+        return;
+      }
+
+      let matchCount = 0;
+      
+      TOOLS.forEach(tool => {
+        const card = document.getElementById(tool.id);
+        if (!card) return;
+
+        // Check if query is in keywords or title
+        const isMatch = tool.keywords.some(kw => kw.includes(cleanQuery)) || 
+                        "historial & analytical data".includes(cleanQuery) ||
+                        // Check if it looks like a symbol query
+                        cleanQuery.length >= 2; // Allow stock symbols to match the main dashboard card
+
+        if (isMatch) {
+          card.classList.remove('fade-out');
+          matchCount++;
+        } else {
+          card.classList.add('fade-out');
+        }
+      });
+
+      if (matchCount === 0) {
+        cardsGrid.style.display = 'none';
+        noResults.style.display = 'flex';
+      } else {
+        cardsGrid.style.display = 'flex';
+        noResults.style.display = 'none';
+      }
+    }
+
+    // Handles card clicks. If search query is present, it appends it to the url
+    function handleCardClick(baseUrl) {
+      const query = document.getElementById('repo-search').value.trim();
+      if (query) {
+        // Carry search forward if it looks like a symbol/sector/etc rather than a tool title
+        // Filter out tool keywords so tool-searching doesn't prefill company search in dashboard
+        const isToolKeywordOnly = ['chart', 'charts', 'data', 'turnover', 'historial', 'historical', 'analytical', 'amfi'].includes(query.toLowerCase());
+        
+        if (!isToolKeywordOnly) {
+          window.location.href = `${baseUrl}?search=${encodeURIComponent(query)}`;
+          return;
+        }
+      }
+      window.location.href = baseUrl;
+    }
+
+    // Triggered when Search button or Enter key is pressed.
+    // Navigates to the first visible card with query parameter
+    function triggerSearchRedirect() {
+      const query = document.getElementById('repo-search').value.trim();
+      // Redirect to dashboard with search parameter
+      handleCardClick('turnover_assement.html');
+    }
+  </script>
+</body>
+</html>

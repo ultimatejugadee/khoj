@@ -29,6 +29,54 @@
       --warning: #f59e0b;
       --danger: #ef4444;
       --transition-speed: 0.2s;
+
+      /* Theme specific variables (defaults to dark mode) */
+      --sidebar-bg: rgba(15, 20, 35, 0.85);
+      --input-bg: rgba(10, 14, 26, 0.6);
+      --input-border: rgba(255, 255, 255, 0.08);
+      --btn-group-bg: rgba(10, 14, 26, 0.7);
+      --btn-hover-bg: rgba(255, 255, 255, 0.05);
+      --sub-row-bg: rgba(10, 14, 26, 0.4);
+      --nested-wrap-bg: rgba(9, 13, 24, 0.6);
+      --tag-wrap-bg: rgba(5, 7, 12, 0.8);
+      --logo-text-gradient-start: #ffffff;
+      --logo-text-gradient-end: #c7d2fe;
+      --loader-bg: rgba(8, 11, 20, 0.95);
+      --border-line: rgba(255, 255, 255, 0.1);
+      --border-line-subtle: rgba(255, 255, 255, 0.04);
+      --row-hover-bg: rgba(255, 255, 255, 0.03);
+      --dropzone-border: rgba(255, 255, 255, 0.15);
+      --dropzone-bg: rgba(255, 255, 255, 0.02);
+      --file-status-bg: rgba(0, 0, 0, 0.2);
+    }
+
+    body.light-theme {
+      --bg-gradient-start: #f8fafc;
+      --bg-gradient-end: #e2e8f0;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(15, 23, 42, 0.08);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #0891b2;
+      --accent-purple: #9333ea;
+      --sidebar-bg: rgba(241, 245, 249, 0.85);
+      --input-bg: rgba(255, 255, 255, 0.9);
+      --input-border: rgba(15, 23, 42, 0.12);
+      --btn-group-bg: rgba(226, 232, 240, 0.8);
+      --btn-hover-bg: rgba(0, 0, 0, 0.05);
+      --sub-row-bg: rgba(241, 245, 249, 0.6);
+      --nested-wrap-bg: rgba(248, 250, 252, 0.8);
+      --tag-wrap-bg: rgba(255, 255, 255, 0.95);
+      --logo-text-gradient-start: #0f172a;
+      --logo-text-gradient-end: #4f46e5;
+      --loader-bg: rgba(241, 245, 249, 0.98);
+      --border-line: rgba(15, 23, 42, 0.1);
+      --border-line-subtle: rgba(15, 23, 42, 0.04);
+      --row-hover-bg: rgba(0, 0, 0, 0.02);
+      --dropzone-border: rgba(15, 23, 42, 0.15);
+      --dropzone-bg: rgba(0, 0, 0, 0.02);
+      --file-status-bg: rgba(0, 0, 0, 0.05);
     }
 
     * {
@@ -79,7 +127,7 @@
 
     /* Sidebar Styles */
     aside {
-      background: rgba(15, 20, 35, 0.85);
+      background: var(--sidebar-bg);
       border-right: 1px solid var(--card-border);
       padding: 24px;
       display: flex;
@@ -113,7 +161,7 @@
     .logo-text h1 {
       font-size: 1.15rem;
       font-weight: 700;
-      background: linear-gradient(to right, #ffffff, #c7d2fe);
+      background: linear-gradient(to right, var(--logo-text-gradient-start), var(--logo-text-gradient-end));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: 0.5px;
@@ -141,8 +189,8 @@
 
     /* Filters Dropdowns */
     .filter-select {
-      background: rgba(10, 14, 26, 0.6);
-      border: 1px solid var(--card-border);
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 8px;
       padding: 10px 12px;
       color: var(--text-main);
@@ -159,8 +207,8 @@
     }
 
     .search-input {
-      background: rgba(10, 14, 26, 0.6);
-      border: 1px solid var(--card-border);
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 8px;
       padding: 10px 12px;
       color: var(--text-main);
@@ -214,8 +262,8 @@
     /* Button Groups */
     .btn-group {
       display: inline-flex;
-      background: rgba(10, 14, 26, 0.7);
-      border: 1px solid var(--card-border);
+      background: var(--btn-group-bg);
+      border: 1px solid var(--input-border);
       padding: 4px;
       border-radius: 8px;
     }
@@ -242,7 +290,7 @@
 
     .btn-group-btn:hover:not(.active) {
       color: var(--text-main);
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--btn-hover-bg);
     }
 
     /* Date Slider Styles */
@@ -356,7 +404,7 @@
       color: var(--text-muted);
       font-weight: 500;
       padding: 12px 16px;
-      border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1.5px solid var(--border-line);
       font-size: 0.82rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -364,7 +412,7 @@
 
     td {
       padding: 14px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--border-line-subtle);
       color: var(--text-main);
     }
 
@@ -374,12 +422,12 @@
     }
 
     .clickable-row:hover {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--row-hover-bg);
     }
 
     /* Hierarchical nested rows styles */
     .sub-table-row {
-      background: rgba(10, 14, 26, 0.4);
+      background: var(--sub-row-bg);
     }
 
     .nested-cell {
@@ -392,7 +440,7 @@
       padding: 16px;
       border-left: 3px solid var(--accent-primary);
       margin: 8px 12px;
-      background: rgba(9, 13, 24, 0.6);
+      background: var(--nested-wrap-bg);
       border-radius: 0 8px 8px 0;
     }
 
@@ -400,7 +448,7 @@
       padding: 12px 16px;
       border-left: 3px solid var(--accent-secondary);
       margin: 6px 16px;
-      background: rgba(5, 7, 12, 0.8);
+      background: var(--tag-wrap-bg);
       border-radius: 0 6px 6px 0;
     }
 
@@ -475,7 +523,8 @@
     .loader-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(8, 11, 20, 0.95);
+      background: var(--loader-bg);
+      color: var(--text-main);
       z-index: 1000;
       display: flex;
       flex-direction: column;
@@ -515,12 +564,12 @@
     /* Dropzone area */
     .dropzone-container {
       margin-top: 15px;
-      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border: 2px dashed var(--dropzone-border);
       border-radius: 12px;
       padding: 32px;
       text-align: center;
       cursor: pointer;
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--dropzone-bg);
       transition: all var(--transition-speed);
       max-width: 550px;
       width: 90%;
@@ -535,7 +584,7 @@
       font-size: 1.05rem;
       font-weight: 600;
       margin-bottom: 8px;
-      color: white;
+      color: var(--text-main);
     }
 
     .dropzone-desc {
@@ -557,9 +606,47 @@
       display: flex;
       justify-content: space-between;
       padding: 8px 12px;
-      background: rgba(0, 0, 0, 0.2);
+      background: var(--file-status-bg);
       border-radius: 6px;
       font-size: 0.8rem;
+    }
+
+    /* Theme Toggle Button Styles */
+    .theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: all var(--transition-speed);
+      padding: 0;
+      margin-left: auto;
+    }
+
+    .theme-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-primary);
+      transform: scale(1.05);
+    }
+
+    body.light-theme .theme-toggle-btn {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    body.light-theme .theme-toggle-btn:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-icon {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.5;
     }
 
     .file-status-ok {
@@ -674,6 +761,16 @@
           <h1>Turnover Assessment</h1>
           <p>Market Data Analytics</p>
         </div>
+        <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+          <!-- Moon Icon -->
+          <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <!-- Sun Icon -->
+          <svg class="theme-icon sun-icon hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+        </button>
       </div>
 
       <!-- Filters Panel -->
@@ -809,6 +906,53 @@
   </div>
 
   <script>
+    // Theme Management and Initialization
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-theme');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      
+      const sunIcon = document.querySelector('.sun-icon');
+      const moonIcon = document.querySelector('.moon-icon');
+      if (sunIcon && moonIcon) {
+        if (isLight) {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      }
+
+      // Redraw chart if initialized to update gridlines and ticks
+      if (typeof updateChart === 'function') {
+        updateChart();
+      }
+    }
+
+    // Initialize Theme early to prevent flicker
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+      }
+    })();
+
+    // Synchronize Icons on DOMContentLoaded
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      const sunIcon = document.querySelector('.sun-icon');
+      const moonIcon = document.querySelector('.moon-icon');
+      if (sunIcon && moonIcon) {
+        if (savedTheme === 'light') {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      }
+    });
+
     // Constants
     const REQUIRED_FILES = {
       daily: 'bhavcopy_daily.csv',
@@ -1017,6 +1161,16 @@
 
         // 4. Initialize global dimensions filters & inputs
         initializeFiltersAndControls();
+
+        // 4.5. Check for URL search parameter and pre-fill search box
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchVal = urlParams.get('search');
+        if (searchVal) {
+          const searchInput = document.getElementById('company-search');
+          if (searchInput) {
+            searchInput.value = searchVal;
+          }
+        }
 
         // 5. Hide Loader Screen
         document.getElementById('loader-screen').classList.add('hidden');
@@ -1985,6 +2139,15 @@
       // Time uses Line chart, Dimensions use Bar chart
       const chartType = xAxisVar === 'time' ? 'line' : 'bar';
 
+      // Dynamic theme colors for Chart Grid and Ticks
+      const isLight = document.body.classList.contains('light-theme');
+      const gridColor = isLight ? 'rgba(15, 23, 42, 0.06)' : 'rgba(255, 255, 255, 0.04)';
+      const tickColor = isLight ? '#64748b' : '#9ca3af';
+      const tooltipBg = isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(15, 23, 42, 0.95)';
+      const tooltipBorder = isLight ? 'rgba(15, 23, 42, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+      const tooltipTitleColor = isLight ? '#0f172a' : '#ffffff';
+      const tooltipBodyColor = isLight ? '#334155' : '#f3f4f6';
+
       state.chartInstance = new Chart(ctx, {
         type: chartType,
         data: {
@@ -2010,10 +2173,12 @@
               display: false
             },
             tooltip: {
-              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              backgroundColor: tooltipBg,
+              titleColor: tooltipTitleColor,
+              bodyColor: tooltipBodyColor,
               titleFont: { family: 'Outfit', size: 13, weight: '600' },
               bodyFont: { family: 'Outfit', size: 13 },
-              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderColor: tooltipBorder,
               borderWidth: 1,
               padding: 12,
               callbacks: {
@@ -2029,19 +2194,19 @@
           scales: {
             x: {
               grid: {
-                color: 'rgba(255, 255, 255, 0.04)'
+                color: gridColor
               },
               ticks: {
-                color: '#9ca3af',
+                color: tickColor,
                 font: { family: 'Outfit', size: 11 }
               }
             },
             y: {
               grid: {
-                color: 'rgba(255, 255, 255, 0.04)'
+                color: gridColor
               },
               ticks: {
-                color: '#9ca3af',
+                color: tickColor,
                 font: { family: 'Outfit', size: 11 }
               }
             }
