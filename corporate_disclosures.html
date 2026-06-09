@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corporate Disclosures - Khoj Hub</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #090d16;
+      --bg-gradient-end: #121829;
+      --card-bg: rgba(22, 28, 45, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-primary: #6366f1; /* Indigo */
+      --accent-secondary: #06b6d4; /* Cyan */
+      --accent-purple: #a855f7; /* Purple */
+      --transition-speed: 0.3s;
+      --logo-text-gradient-start: #ffffff;
+      --logo-text-gradient-end: #c7d2fe;
+      --suggestion-bg: rgba(255, 255, 255, 0.05);
+      --suggestion-hover-bg: rgba(99, 102, 241, 0.15);
+      --suggestion-text: #c7d2fe;
+    }
+
+    body.light-theme {
+      --bg-gradient-start: #f8fafc;
+      --bg-gradient-end: #e2e8f0;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(15, 23, 42, 0.08);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #0891b2;
+      --accent-purple: #9333ea;
+      --logo-text-gradient-start: #0f172a;
+      --logo-text-gradient-end: #4f46e5;
+      --suggestion-bg: rgba(0, 0, 0, 0.05);
+      --suggestion-hover-bg: rgba(79, 70, 229, 0.1);
+      --suggestion-text: #4f46e5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition-speed);
+    }
+
+    /* Header Styles */
+    header {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .logo-text h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--logo-text-gradient-start), var(--logo-text-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Theme Toggle */
+    .theme-toggle-btn {
+      background: var(--suggestion-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: all var(--transition-speed);
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--suggestion-hover-bg);
+      border-color: var(--accent-primary);
+      transform: scale(1.05);
+    }
+
+    .theme-icon {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.5;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Main Content */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 40px 24px 80px 24px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      gap: 32px;
+    }
+
+    /* Navigation Bar */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: var(--suggestion-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      transition: all var(--transition-speed);
+    }
+
+    .back-btn:hover {
+      background: var(--suggestion-hover-bg);
+      border-color: var(--accent-primary);
+      transform: translateX(-4px);
+    }
+
+    .back-btn-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Page Header */
+    .page-header {
+      width: 100%;
+    }
+
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, var(--text-main), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 800px;
+    }
+
+    /* Grid Layout */
+    .grid-container {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 10px;
+    }
+
+    /* Card Styling */
+    .dashboard-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 30px;
+      width: 100%;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      backdrop-filter: blur(12px);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      position: relative;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    /* Neon Gradient Border Hover Effect */
+    .dashboard-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-purple));
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 0;
+    }
+
+    .dashboard-card-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
+      border-color: transparent;
+    }
+
+    .dashboard-card:hover::before {
+      opacity: 0.15;
+    }
+
+    /* Card Icon */
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-icon-container {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-primary);
+      transition: all var(--transition-speed);
+    }
+
+    .dashboard-card:hover .card-icon-container {
+      background: var(--accent-primary);
+      color: white;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .card-icon-svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .arrow-icon-svg {
+      width: 20px;
+      height: 20px;
+      color: var(--text-muted);
+      transition: transform var(--transition-speed), color var(--transition-speed);
+    }
+
+    .dashboard-card:hover .arrow-icon-svg {
+      transform: translateX(5px);
+      color: var(--accent-secondary);
+    }
+
+    /* Card Details */
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Details List */
+    .card-details-list {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transform: translateY(10px);
+      transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 0;
+    }
+
+    body.light-theme .card-details-list {
+      border-top-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-card:hover .card-details-list {
+      opacity: 1;
+      max-height: 260px; /* high enough to fit content */
+      transform: translateY(0);
+      padding-top: 16px;
+      margin-top: 4px;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .detail-bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-secondary);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <div class="logo-icon">K</div>
+      <div class="logo-text">
+        <h1>Khoj Hub</h1>
+        <p>Market Intelligence Engine</p>
+      </div>
+    </a>
+
+    <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+      <!-- Moon Icon -->
+      <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+      <!-- Sun Icon -->
+      <svg class="theme-icon sun-icon hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+      </svg>
+    </button>
+  </header>
+
+  <!-- Main Content Area -->
+  <main>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <a href="index.html" class="back-btn">
+        <svg class="back-btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Hub
+      </a>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h2 class="page-title">Corporate Disclosures & Filings</h2>
+      <p class="page-desc">
+        Track corporate governance, board meeting summaries, promoter shareholding status, and structured files published by listed companies.
+      </p>
+    </div>
+
+    <!-- Tool Cards Grid -->
+    <div class="grid-container">
+      
+      <!-- Card: Board Meetings & Financials -->
+      <div class="dashboard-card">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Board Meetings & Financials</div>
+          <div class="card-desc">
+            Monitor SEBI board announcements, quarterly audit sheets, and press statement publications.
+          </div>
+
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Board Decisions:</strong> Track dividend declarations and acquisitions</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Financial Audits:</strong> Download quarterly and annual balance sheets</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><span><strong>Public Press Releases:</strong> Instant access to management briefs</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Shareholding Patterns -->
+      <div class="dashboard-card">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Shareholding Patterns</div>
+          <div class="card-desc">
+            View promoter stakes, mutual fund allocations, foreign institutional investment changes, and retail shares.
+          </div>
+
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Promoter Holdings:</strong> Track pledge status and modifications</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>FII & DII Inflow:</strong> Review institutional ownership shifts</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Public Free Float:</strong> Access general public ownership distributions</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Insider Trading Reports -->
+      <div class="dashboard-card">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-5 4a3 3 0 100-6 3 3 0 000 6zm-7 6a7 7 0 0114 0H3z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Insider Trading Reports</div>
+          <div class="card-desc">
+            Access SEBI Form C/D filings and acquisition logs. Track stock purchases and sales by directors and executives.
+          </div>
+
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Form C & D Logs:</strong> Search transaction details by employee name</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Block Trading Alerts:</strong> Spot key management asset swaps</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Founder Pledges:</strong> Monitor collateral changes and releases</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Corporate Actions -->
+      <div class="dashboard-card">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Corporate Actions</div>
+          <div class="card-desc">
+            Stay up-to-date with dividend declarations, stock splits, bonus shares issuance, buybacks, and rights offers.
+          </div>
+
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Ex & Record Dates:</strong> Accurate payout timeline schedules</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Capital Changes:</strong> Splits adjustments and dilution ratios</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Buyback Tenders:</strong> Price parameters and eligibility percentages</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Theme Management
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-theme');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      syncThemeIcons(isLight);
+    }
+
+    function syncThemeIcons(isLight) {
+      const sunIcon = document.querySelector('.sun-icon');
+      const moonIcon = document.querySelector('.moon-icon');
+      if (sunIcon && moonIcon) {
+        if (isLight) {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      }
+    }
+
+    // Initialize Theme early
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+      }
+    })();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      syncThemeIcons(savedTheme === 'light');
+    });
+  </script>
+</body>
+</html>

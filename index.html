@@ -150,7 +150,7 @@
       align-items: center;
       justify-content: center;
       padding: 40px 24px 80px 24px;
-      max-width: 800px;
+      max-width: 1200px;
       width: 100%;
       margin: 0 auto;
     }
@@ -285,8 +285,9 @@
     /* Card Grid */
     .grid-container {
       width: 100%;
-      display: flex;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
       margin-top: 20px;
       transition: opacity var(--transition-speed), transform var(--transition-speed);
     }
@@ -298,7 +299,6 @@
       border-radius: 16px;
       padding: 30px;
       width: 100%;
-      max-width: 500px;
       cursor: pointer;
       text-decoration: none;
       color: inherit;
@@ -526,13 +526,13 @@
     <!-- Tool Cards Grid -->
     <div class="grid-container" id="cards-grid">
       
-      <!-- Card: Historial & Analytical Data -->
-      <a href="javascript:void(0)" class="dashboard-card" id="card-turnover" onclick="handleCardClick('turnover_assement.html')">
+      <!-- Card: Market Data (Real-time & Snapshots) -->
+      <a href="javascript:void(0)" class="dashboard-card" id="card-market" onclick="handleCardClick('market_data.html')">
         <div class="dashboard-card-inner">
           <div class="card-header-row">
             <div class="card-icon-container">
               <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
             <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -540,33 +540,239 @@
             </svg>
           </div>
           
-          <div class="card-title">Historial & Analytical Data</div>
+          <div class="card-title">Market Data (Real-time & Snapshots)</div>
           
           <div class="card-desc">
-            Load daily/monthly bhavcopy and analyze traded volumes, close prices, and turnover metrics. Group by classifications with Chart.js trend visualization.
+            Monitor live equity, derivatives, and debt markets. Analyze order book depth, price ticks, and real-time volume snapshots.
           </div>
 
           <!-- Hover Details list -->
           <div class="card-details-list">
             <div class="detail-item">
               <div class="detail-bullet"></div>
-              <span><strong>Daily & Monthly Analytics:</strong> Granular time-series switching</span>
+              <span><strong>Equity Market Snapshot:</strong> Real-time price actions and top gainers</span>
             </div>
             <div class="detail-item">
               <div class="detail-bullet"></div>
-              <span><strong>Dynamic Dimensions:</strong> Group by category, industry, zone, city</span>
+              <span><strong>Derivatives Depth:</strong> Live Open Interest (OI) updates</span>
             </div>
             <div class="detail-item">
               <div class="detail-bullet"></div>
-              <span><strong>Trend Charting:</strong> Visualize turnover, volume, and prices</span>
+              <span><strong>Debt & Money:</strong> Government bonds and call money rates</span>
             </div>
             <div class="detail-item">
               <div class="detail-bullet"></div>
-              <span><strong>Tag Hierarchies:</strong> Expand and compare nested AMFI classifications</span>
+              <span><strong>Live Tick Feeds:</strong> WebSocket high-frequency order book logs</span>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card: Corporate Disclosures & Filings -->
+      <a href="javascript:void(0)" class="dashboard-card" id="card-disclosures" onclick="handleCardClick('corporate_disclosures.html')">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Corporate Disclosures & Filings</div>
+          
+          <div class="card-desc">
+            Track statutory filings, board meetings, insider trading reports, and corporate actions. Access clean structured disclosures in real-time.
+          </div>
+
+          <!-- Hover Details list -->
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Financial Results:</strong> SEBI quarterly audits & statements</span>
             </div>
             <div class="detail-item">
               <div class="detail-bullet"></div>
-              <span><strong>Offline Ingestion:</strong> Drag-and-drop parser for local CSV files</span>
+              <span><strong>Shareholding Patterns:</strong> Promoter and institutional holdings</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Insider Trading:</strong> Acquisition filings and Form C/D reports</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Corporate Actions:</strong> Dividend splits and merger documents</span>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card: Derivatives & Segment-Specific Data -->
+      <a href="javascript:void(0)" class="dashboard-card" id="card-derivatives" onclick="handleCardClick('derivatives_data.html')">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Derivatives & Segment-Specific Data</div>
+          
+          <div class="card-desc">
+            Deep dive into Equity, Currency, and Commodity derivatives. Review Open Interest distribution, PCR ratio, and rollover analytics.
+          </div>
+
+          <!-- Hover Details list -->
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Equity Derivatives:</strong> Option chain and futures stats</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Currency F&O:</strong> USDINR, EURINR volume and contract charts</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Commodity Data:</strong> Gold and crude oil contract margins</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Interest Rate Futures:</strong> Yield-to-maturity tracking</span>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card: Historical & Analytical Data -->
+      <a href="javascript:void(0)" class="dashboard-card" id="card-historical" onclick="handleCardClick('historical_analytical.html')">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Historical & Analytical Data</div>
+          
+          <div class="card-desc">
+            Load historical daily/monthly bhavcopy and analyze traded volumes, close prices, and turnover metrics. Includes the Turnover Assessment dashboard.
+          </div>
+
+          <!-- Hover Details list -->
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Historical Turnover:</strong> Granular time-series switching</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Historical Prices:</strong> Close prices and split adjustments</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Index History:</strong> Nifty/Sensex aggregate index historical ratios</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Data Archives:</strong> Bulk & block deal databases</span>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card: Institutional & Participant Activity -->
+      <a href="javascript:void(0)" class="dashboard-card" id="card-institutional" onclick="handleCardClick('institutional_activity.html')">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Institutional & Participant Activity</div>
+          
+          <div class="card-desc">
+            Monitor FII/FPI net transactions, mutual fund (DII) flows, and client category trading volume. Keep tabs on institutional market sentiment.
+          </div>
+
+          <!-- Hover Details list -->
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>FII/FPI Flows:</strong> Cash segment & derivative trading logs</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>DII Activities:</strong> Mutual fund aggregate asset tracking</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Client Segment:</strong> Retail, HNI, and NRI volume shares</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Margin Trading:</strong> Short interest and outstanding balances</span>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card: Regulatory, Compliance & Educational Data -->
+      <a href="javascript:void(0)" class="dashboard-card" id="card-regulatory" onclick="handleCardClick('regulatory_compliance.html')">
+        <div class="dashboard-card-inner">
+          <div class="card-header-row">
+            <div class="card-icon-container">
+              <svg class="card-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <svg class="arrow-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </div>
+          
+          <div class="card-title">Regulatory, Compliance & Educational Data</div>
+          
+          <div class="card-desc">
+            Access SEBI regulations, listing compliance reports, and investor education resources. Ensure adherence to exchange guidelines.
+          </div>
+
+          <!-- Hover Details list -->
+          <div class="card-details-list">
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>SEBI Circulars:</strong> Rules, mandates, and policy releases</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Listing Status:</strong> Corporate compliance checklists</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Exchange Bylaws:</strong> Trading rules and circuit margins</span>
+            </div>
+            <div class="detail-item">
+              <div class="detail-bullet"></div>
+              <span><strong>Investor Education:</strong> FAQ guides and grievance forms</span>
             </div>
           </div>
         </div>
@@ -589,13 +795,53 @@
     // Tool details and keywords for the search matching
     const TOOLS = [
       {
-        id: 'card-turnover',
-        url: 'turnover_assement.html',
+        id: 'card-market',
+        url: 'market_data.html',
+        keywords: [
+          'market', 'data', 'realtime', 'real-time', 'snapshots', 'equity', 'derivatives', 'debt', 'money', 
+          'live', 'ticks', 'prices', 'order book', 'depth', 'websocket', 'streams', 'feed'
+        ]
+      },
+      {
+        id: 'card-disclosures',
+        url: 'corporate_disclosures.html',
+        keywords: [
+          'corporate', 'disclosures', 'filings', 'board meetings', 'financials', 'results', 'shareholding', 
+          'patterns', 'insider', 'trading', 'actions', 'dividends', 'splits', 'sebi', 'announcements'
+        ]
+      },
+      {
+        id: 'card-derivatives',
+        url: 'derivatives_data.html',
+        keywords: [
+          'derivatives', 'segment', 'f&o', 'options', 'futures', 'open interest', 'oi', 'pcr', 'rollover', 
+          'currency', 'commodity', 'gold', 'crude', 'g-sec', 'yield', 'interest rate'
+        ]
+      },
+      {
+        id: 'card-historical',
+        url: 'historical_analytical.html',
         keywords: [
           'historial', 'historical', 'analytical', 'data', 'turnover', 'bhavcopy', 
           'volume', 'price', 'market', 'stock', 'chart', 'graph', 'trend', 
           'amfi', 'category', 'industry', 'classification', 'zone', 'city',
-          'daily', 'monthly', 'ingestion', 'csv'
+          'daily', 'monthly', 'ingestion', 'csv', 'prices', 'archives', 'index history'
+        ]
+      },
+      {
+        id: 'card-institutional',
+        url: 'institutional_activity.html',
+        keywords: [
+          'institutional', 'participant', 'activity', 'fii', 'fpi', 'dii', 'mutual fund', 'flows', 
+          'client', 'category', 'retail', 'pro', 'prop', 'nri', 'margin', 'short sales'
+        ]
+      },
+      {
+        id: 'card-regulatory',
+        url: 'regulatory_compliance.html',
+        keywords: [
+          'regulatory', 'compliance', 'educational', 'sebi', 'circulars', 'rules', 'listing', 
+          'exchange', 'bylaws', 'investor', 'protection', 'education', 'faqs', 'grievance'
         ]
       }
     ];
@@ -653,8 +899,7 @@
       }
     }
 
-    // Filters cards on the page. Since we have 1 card, if the query doesn't match
-    // any keywords or the title, we fade it and show "No matching tools found".
+    // Filters cards on the page based on keywords, title, or search tags
     function matchCards(query) {
       const cleanQuery = query.toLowerCase().trim();
       const cardsGrid = document.getElementById('cards-grid');
@@ -666,7 +911,7 @@
           const card = document.getElementById(tool.id);
           if (card) card.classList.remove('fade-out');
         });
-        cardsGrid.style.display = 'flex';
+        cardsGrid.style.display = 'grid';
         noResults.style.display = 'none';
         return;
       }
@@ -677,11 +922,13 @@
         const card = document.getElementById(tool.id);
         if (!card) return;
 
+        // Check title text inside card
+        const titleElement = card.querySelector('.card-title');
+        const titleText = titleElement ? titleElement.textContent.toLowerCase() : '';
+
         // Check if query is in keywords or title
         const isMatch = tool.keywords.some(kw => kw.includes(cleanQuery)) || 
-                        "historial & analytical data".includes(cleanQuery) ||
-                        // Check if it looks like a symbol query
-                        cleanQuery.length >= 2; // Allow stock symbols to match the main dashboard card
+                        titleText.includes(cleanQuery);
 
         if (isMatch) {
           card.classList.remove('fade-out');
@@ -695,7 +942,7 @@
         cardsGrid.style.display = 'none';
         noResults.style.display = 'flex';
       } else {
-        cardsGrid.style.display = 'flex';
+        cardsGrid.style.display = 'grid';
         noResults.style.display = 'none';
       }
     }
@@ -704,8 +951,6 @@
     function handleCardClick(baseUrl) {
       const query = document.getElementById('repo-search').value.trim();
       if (query) {
-        // Carry search forward if it looks like a symbol/sector/etc rather than a tool title
-        // Filter out tool keywords so tool-searching doesn't prefill company search in dashboard
         const isToolKeywordOnly = ['chart', 'charts', 'data', 'turnover', 'historial', 'historical', 'analytical', 'amfi'].includes(query.toLowerCase());
         
         if (!isToolKeywordOnly) {
@@ -719,9 +964,17 @@
     // Triggered when Search button or Enter key is pressed.
     // Navigates to the first visible card with query parameter
     function triggerSearchRedirect() {
-      const query = document.getElementById('repo-search').value.trim();
-      // Redirect to dashboard with search parameter
-      handleCardClick('turnover_assement.html');
+      // Find the first visible card that is not faded out
+      const visibleCard = Array.from(document.querySelectorAll('.dashboard-card')).find(card => !card.classList.contains('fade-out'));
+      if (visibleCard) {
+        const tool = TOOLS.find(t => t.id === visibleCard.id);
+        if (tool) {
+          handleCardClick(tool.url);
+          return;
+        }
+      }
+      // Fallback
+      handleCardClick('historical_analytical.html');
     }
   </script>
 </body>
