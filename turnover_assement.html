@@ -725,6 +725,38 @@
       font-weight: 500;
       margin-top: 4px;
     }
+
+    /* Jump Button styling */
+    .jump-btn {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--accent-secondary);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.65rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: all var(--transition-speed);
+    }
+    .jump-btn:hover {
+      background: var(--accent-primary) !important;
+      color: white !important;
+      border-color: transparent !important;
+      transform: translateX(2px);
+    }
+    body.light-theme .jump-btn {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: rgba(79, 70, 229, 0.2);
+      color: #4f46e5;
+    }
+    body.light-theme .jump-btn:hover {
+      background: var(--accent-primary) !important;
+      color: white !important;
+    }
   </style>
 </head>
 <body>
@@ -2060,9 +2092,22 @@
           }
         });
 
+        // A jump button is visible only if the tag is also present in control_menu.csv (and hence has a button at the top)
+        const isControl = state.parsedData.control.some(ctrl => ctrl.Menu_List === fieldName);
+
         return `
-          <div class="tag-compare-card">
-            <div class="tag-compare-title">${label}</div>
+          <div class="tag-compare-card" style="position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 8px;">
+              <div class="tag-compare-title" style="margin-bottom: 0;">${label}</div>
+              ${isControl ? `
+                <button class="jump-btn" onclick="event.stopPropagation(); setAggDimension('${dataField}')" title="Jump to ${label} Aggregation">
+                  Jump
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 10px; height: 10px; stroke-width: 3;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              ` : ''}
+            </div>
             <div class="tag-compare-value" title="${companyTagValue}">${companyTagValue}</div>
             <div class="tag-compare-stats">Total: ${formatTurnover(sumTurnoverInScope)}</div>
           </div>
