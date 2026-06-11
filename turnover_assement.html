@@ -918,6 +918,167 @@
       width: 18px;
       height: 18px;
     }
+
+    /* Variable Definition Headers, Tooltips, and Popups */
+    .var-header-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: help;
+      position: relative;
+    }
+    .number-col .var-header-container {
+      justify-content: flex-end;
+    }
+    .info-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      padding: 3px;
+      border-radius: 50%;
+      transition: all var(--transition-speed);
+      outline: none;
+    }
+    .info-btn:hover {
+      color: var(--accent-primary);
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.15);
+    }
+    body.light-theme .info-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    .info-icon {
+      width: 14px;
+      height: 14px;
+    }
+    .variable-tooltip {
+      position: fixed;
+      background: rgba(18, 24, 41, 0.95);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      max-width: 320px;
+      z-index: 1100;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+      color: var(--text-main);
+      font-size: 0.85rem;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    body.light-theme .variable-tooltip {
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 10px 25px rgba(15,23,42,0.1);
+    }
+    .variable-tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .variable-tooltip h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--accent-secondary);
+    }
+    .variable-tooltip .desc {
+      color: var(--text-main);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .variable-tooltip .methodology {
+      font-size: 0.78rem;
+      border-top: 1px solid var(--border-line-subtle);
+      padding-top: 8px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .variable-popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .variable-popup-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .variable-popup-content {
+      background: linear-gradient(135deg, rgba(20, 28, 48, 0.95), rgba(10, 15, 30, 0.95));
+      border: 1px solid var(--accent-primary);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(99, 102, 241, 0.15);
+      color: var(--text-main);
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    body.light-theme .variable-popup-content {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 247, 250, 0.98));
+      border-color: var(--accent-primary);
+      box-shadow: 0 20px 50px rgba(15,23,42,0.15);
+    }
+    .variable-popup-overlay.visible .variable-popup-content {
+      transform: scale(1);
+    }
+    .popup-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      transition: color var(--transition-speed), transform var(--transition-speed);
+      outline: none;
+    }
+    .popup-close-btn:hover {
+      color: var(--danger);
+      transform: scale(1.15);
+    }
+    .popup-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(to right, var(--text-main), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      padding-right: 20px;
+    }
+    .popup-desc {
+      font-size: 0.98rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      color: var(--text-main);
+    }
+    .popup-methodology-container {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-line-subtle);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    body.light-theme .popup-methodology-container {
+      background: rgba(0, 0, 0, 0.02);
+    }
   </style>
 </head>
 <body class="light-theme">
@@ -1119,6 +1280,18 @@
 
   </main>
 
+  <!-- Variable Info Tooltip -->
+  <div id="variable-tooltip" class="variable-tooltip hidden"></div>
+
+  <!-- Variable Info Popup Modal -->
+  <div id="variable-popup-overlay" class="variable-popup-overlay hidden" onclick="closeVarPopupOutside(event)">
+    <div class="variable-popup-content" onclick="event.stopPropagation()">
+      <button class="popup-close-btn" onclick="closeVarPopup()" aria-label="Close popup">&times;</button>
+      <div id="popup-body"></div>
+    </div>
+  </div>
+
+
   <script>
     // Theme Management and Initialization
     function toggleTheme() {
@@ -1213,7 +1386,175 @@
     // Triggered on page load
     window.addEventListener('DOMContentLoaded', () => {
       autoFetchFiles();
+      fetchVariableDefinitions();
     });
+
+    // Fetch and Parse XML variable definitions
+    function fetchVariableDefinitions() {
+      fetch('variable_and_schema_definition.xml')
+        .then(res => {
+          if (!res.ok) throw new Error(`Status ${res.status}`);
+          return res.text();
+        })
+        .then(xmlText => {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+          
+          // Check for parsing errors
+          const parserError = xmlDoc.querySelector('parsererror');
+          if (parserError) {
+            console.error('XML parsing error:', parserError.textContent);
+            throw new Error('XML parsing error');
+          }
+
+          state.variableDefinitions = {};
+          const variables = xmlDoc.getElementsByTagName('variable');
+          for (let i = 0; i < variables.length; i++) {
+            const node = variables[i];
+            const id = node.getAttribute('id');
+            const name = node.getElementsByTagName('name')[0]?.textContent || '';
+            const definition = node.getElementsByTagName('definition')[0]?.textContent || '';
+            const methodology = node.getElementsByTagName('methodology')[0]?.textContent || '';
+            
+            state.variableDefinitions[id] = {
+              name: name.trim(),
+              definition: definition.trim(),
+              methodology: methodology.trim()
+            };
+          }
+        })
+        .catch(err => {
+          console.warn('Failed to load variable_and_schema_definition.xml. Using local fallback definitions.', err);
+          setupFallbackVariableDefinitions();
+        });
+    }
+
+    function setupFallbackVariableDefinitions() {
+      state.variableDefinitions = {
+        turnover: {
+          name: "Total Turnover",
+          definition: "Total Turnover represents the total monetary value of all shares traded during the specified time period.",
+          methodology: "<strong>Methodology:</strong><br/>Turnover is calculated as:<br/><code>Turnover = Sum of (Trade Price * Quantity Traded)</code> for all transactions.<br/><br/><strong>Display formats:</strong><br/>• <em>Indian System:</em> Displayed in Crores (₹ Cr) where 1 Crore = 10,000,000.<br/>• <em>Western System:</em> Displayed in Billions (₹ B) or Millions (₹ M) depending on the scale."
+        },
+        volume: {
+          name: "Traded Volume",
+          definition: "Traded Volume represents the total number of shares transacted (bought and sold) during the specified time period.",
+          methodology: "<strong>Methodology:</strong><br/>Volume is the cumulative sum of shares traded:<br/><code>Volume = Sum of (Quantity Traded)</code> across all trades.<br/><br/><strong>Display formats:</strong><br/>• <em>Indian System:</em> Displayed in Crores (Cr) or Lakhs (L) depending on the value.<br/>• <em>Western System:</em> Displayed in Billions (B), Millions (M), or Thousands (K)."
+        },
+        closePrice: {
+          name: "Avg Close Price",
+          definition: "Average Close Price is the average closing price of the stock(s), weighted by traded volume if aggregated over multiple records.",
+          methodology: "<strong>Methodology:</strong><br/>For a single stock on a single day, this is the official closing price (ClsPric).<br/>For aggregated rows (e.g. across multiple companies or dates), this is the Volume-Weighted Average Price:<br/><code>Weighted Price = Sum of (Close Price * Volume) / Sum of (Volume)</code>.<br/><br/><strong>Display formats:</strong><br/>• Displayed as absolute currency in Indian Rupees (₹) rounded to 2 decimal places."
+        },
+        companyCount: {
+          name: "Company Count",
+          definition: "The count of unique companies or stock symbols represented within the aggregated group.",
+          methodology: "<strong>Methodology:</strong><br/>Calculated by counting the unique occurrences of company tickers/symbols:<br/><code>Count = Size of Set(SYMBOL)</code> within the active filter scope."
+        }
+      };
+    }
+
+    // Helper to generate header HTML with info icons and hover tooltip event listeners
+    function getVarHeaderHtml(label, varId) {
+      return `
+        <span class="var-header-container" data-var-id="${varId}" onmouseenter="showVarTooltip(event, '${varId}')" onmouseleave="hideVarTooltip()">
+          ${label}
+          <button class="info-btn" onclick="event.stopPropagation(); showVarPopup('${varId}')" aria-label="More info about ${label}">
+            <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+          </button>
+        </span>
+      `;
+    }
+
+    // Tooltip logic
+    function showVarTooltip(event, varId) {
+      const tooltip = document.getElementById('variable-tooltip');
+      const varData = state.variableDefinitions && state.variableDefinitions[varId];
+      if (!tooltip || !varData) return;
+
+      tooltip.innerHTML = `
+        <h4>${varData.name}</h4>
+        <div class="desc">${varData.definition}</div>
+        <div class="methodology">${varData.methodology}</div>
+      `;
+
+      tooltip.classList.remove('hidden');
+      void tooltip.offsetWidth; // force reflow
+      tooltip.classList.add('visible');
+
+      // Positioning
+      const rect = event.currentTarget.getBoundingClientRect();
+      const tooltipHeight = tooltip.offsetHeight;
+      const tooltipWidth = tooltip.offsetWidth;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Try placing above
+      let top = rect.top - tooltipHeight - 10;
+      let left = rect.left + (rect.width - tooltipWidth) / 2;
+
+      // Adjust if it goes out of boundaries
+      if (top < 10) {
+        top = rect.bottom + 10; // place below
+      }
+      if (left < 10) {
+        left = 10;
+      } else if (left + tooltipWidth > viewportWidth - 10) {
+        left = viewportWidth - tooltipWidth - 10;
+      }
+
+      tooltip.style.top = `${top}px`;
+      tooltip.style.left = `${left}px`;
+    }
+
+    function hideVarTooltip() {
+      const tooltip = document.getElementById('variable-tooltip');
+      if (!tooltip) return;
+      tooltip.classList.remove('visible');
+      tooltip.classList.add('hidden');
+    }
+
+    // Modal popup logic
+    function showVarPopup(varId) {
+      hideVarTooltip();
+
+      const overlay = document.getElementById('variable-popup-overlay');
+      const body = document.getElementById('popup-body');
+      const varData = state.variableDefinitions && state.variableDefinitions[varId];
+
+      if (!overlay || !body || !varData) return;
+
+      body.innerHTML = `
+        <h3 class="popup-title">${varData.name}</h3>
+        <p class="popup-desc">${varData.definition}</p>
+        <div class="popup-methodology-container">
+          ${varData.methodology}
+        </div>
+      `;
+
+      overlay.classList.remove('hidden');
+      void overlay.offsetWidth; // force reflow
+      overlay.classList.add('visible');
+    }
+
+    function closeVarPopup() {
+      const overlay = document.getElementById('variable-popup-overlay');
+      if (!overlay) return;
+      overlay.classList.remove('visible');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 300);
+    }
+
+    // Dismiss on clicking outside
+    function closeVarPopupOutside(e) {
+      if (e.target.id === 'variable-popup-overlay') {
+        closeVarPopup();
+      }
+    }
+
 
     // Attempt to automatically fetch the files relative to html directory
     function autoFetchFiles() {
@@ -2134,10 +2475,10 @@
         headers.innerHTML = `
           <th style="width: 50px;"></th>
           <th>Time Period</th>
-          <th class="number-col">Total Turnover</th>
-          <th class="number-col">Traded Volume</th>
-          <th class="number-col">Avg Close Price</th>
-          <th class="number-col" style="width: 150px;">Company Count</th>
+          <th class="number-col">${getVarHeaderHtml('Total Turnover', 'turnover')}</th>
+          <th class="number-col">${getVarHeaderHtml('Traded Volume', 'volume')}</th>
+          <th class="number-col">${getVarHeaderHtml('Avg Close Price', 'closePrice')}</th>
+          <th class="number-col" style="width: 170px;">${getVarHeaderHtml('Company Count', 'companyCount')}</th>
         `;
 
         // Group rows by TimePeriod Key
@@ -2209,10 +2550,10 @@
         headers.innerHTML = `
           <th style="width: 50px;"></th>
           <th>Aggregated Dimension: ${dimLabel}</th>
-          <th class="number-col">Total Turnover</th>
-          <th class="number-col">Traded Volume</th>
-          <th class="number-col">Avg Close Price</th>
-          <th class="number-col" style="width: 150px;">Companies Traded</th>
+          <th class="number-col">${getVarHeaderHtml('Total Turnover', 'turnover')}</th>
+          <th class="number-col">${getVarHeaderHtml('Traded Volume', 'volume')}</th>
+          <th class="number-col">${getVarHeaderHtml('Avg Close Price', 'closePrice')}</th>
+          <th class="number-col" style="width: 170px;">${getVarHeaderHtml('Companies Traded', 'companyCount')}</th>
         `;
 
         // Group rows by Dimension Key
@@ -2374,9 +2715,9 @@
                 <tr>
                   <th style="width: 40px;"></th>
                   <th>Company Info</th>
-                  <th class="number-col">Turnover</th>
-                  <th class="number-col">Volume</th>
-                  <th class="number-col">Avg Price</th>
+                  <th class="number-col">${getVarHeaderHtml('Turnover', 'turnover')}</th>
+                  <th class="number-col">${getVarHeaderHtml('Volume', 'volume')}</th>
+                  <th class="number-col">${getVarHeaderHtml('Avg Price', 'closePrice')}</th>
                   <th class="number-col" style="width: 140px;">Market Cap</th>
                 </tr>
               </thead>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<variables>
+    <variable id="turnover">
+        <name>Total Turnover</name>
+        <definition>Total Turnover represents the total monetary value of all shares traded during the specified time period.</definition>
+        <methodology>
+            <![CDATA[
+            <strong>Methodology:</strong><br/>
+            Turnover is calculated as:<br/>
+            <code>Turnover = Sum of (Trade Price * Quantity Traded)</code> for all transactions.<br/><br/>
+            <strong>Display formats:</strong><br/>
+            • <em>Indian System:</em> Displayed in Crores (₹ Cr) where 1 Crore = 10,000,000.<br/>
+            • <em>Western System:</em> Displayed in Billions (₹ B) or Millions (₹ M) depending on the scale.
+            ]]>
+        </methodology>
+    </variable>
+    <variable id="volume">
+        <name>Traded Volume</name>
+        <definition>Traded Volume represents the total number of shares transacted (bought and sold) during the specified time period.</definition>
+        <methodology>
+            <![CDATA[
+            <strong>Methodology:</strong><br/>
+            Volume is the cumulative sum of shares traded:<br/>
+            <code>Volume = Sum of (Quantity Traded)</code> across all trades.<br/><br/>
+            <strong>Display formats:</strong><br/>
+            • <em>Indian System:</em> Displayed in Crores (Cr) or Lakhs (L) depending on the value.<br/>
+            • <em>Western System:</em> Displayed in Billions (B), Millions (M), or Thousands (K).
+            ]]>
+        </methodology>
+    </variable>
+    <variable id="closePrice">
+        <name>Avg Close Price</name>
+        <definition>Average Close Price is the average closing price of the stock(s), weighted by traded volume if aggregated over multiple records.</definition>
+        <methodology>
+            <![CDATA[
+            <strong>Methodology:</strong><br/>
+            For a single stock on a single day, this is the official closing price (ClsPric).<br/>
+            For aggregated rows (e.g. across multiple companies or dates), this is the Volume-Weighted Average Price:<br/>
+            <code>Weighted Price = Sum of (Close Price * Volume) / Sum of (Volume)</code>.<br/><br/>
+            <strong>Display formats:</strong><br/>
+            • Displayed as absolute currency in Indian Rupees (₹) rounded to 2 decimal places.
+            ]]>
+        </methodology>
+    </variable>
+    <variable id="companyCount">
+        <name>Company Count</name>
+        <definition>The count of unique companies or stock symbols represented within the aggregated group.</definition>
+        <methodology>
+            <![CDATA[
+            <strong>Methodology:</strong><br/>
+            Calculated by counting the unique occurrences of company tickers/symbols:<br/>
+            <code>Count = Size of Set(SYMBOL)</code> within the active filter scope.
+            ]]>
+        </methodology>
+    </variable>
+</variables>
