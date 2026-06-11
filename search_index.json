@@ -1,0 +1,93 @@
+[
+  {
+    "title": "Market Data",
+    "subtitle": "Real-time & Snapshots",
+    "url": "market_data.html",
+    "category": "Real-time Trading & Pricing",
+    "description": "Monitor live equity, derivatives, and debt markets. Analyze order book depth, price ticks, and real-time volume snapshots. WebSocket high-frequency order book logs, bond yields, call money rates, and top gainers/losers.",
+    "details": [
+      "Equity Market Snapshot (prices & gainers)",
+      "Derivatives Depth (live Open Interest)",
+      "Debt & Money (government bonds & call money)",
+      "Live Tick Feeds (WebSocket logs)"
+    ]
+  },
+  {
+    "title": "Corporate Disclosures & Filings",
+    "subtitle": "SEBI Filings & Board Meetings",
+    "url": "corporate_disclosures.html",
+    "category": "Compliance & Corporate Actions",
+    "description": "Track statutory filings, board meetings, insider trading reports, and corporate actions. Access clean structured disclosures, Shareholding Patterns, and promoters details in real-time.",
+    "details": [
+      "Financial Results (SEBI quarterly audits)",
+      "Shareholding Patterns (promoter & institutional)",
+      "Insider Trading (Form C/D acquisition filings)",
+      "Corporate Actions (dividend splits & mergers)"
+    ]
+  },
+  {
+    "title": "Derivatives & Segment-Specific Data",
+    "subtitle": "F&O Option Chains & Roll-overs",
+    "url": "derivatives_data.html",
+    "category": "F&O Analytics",
+    "description": "Deep dive into Equity, Currency, and Commodity derivatives. Review Open Interest (OI) distribution, PCR ratio, yield-to-maturity tracking, and rollover analytics.",
+    "details": [
+      "Equity Derivatives (option chains & futures)",
+      "Currency F&O (USDINR, EURINR volume charts)",
+      "Commodity Data (gold & crude margins)",
+      "Interest Rate Futures (YTM tracking)"
+    ]
+  },
+  {
+    "title": "Historical & Analytical Data",
+    "subtitle": "Bhavcopy & Turnover Trends",
+    "url": "historical_analytical.html",
+    "category": "Historical Archives",
+    "description": "Load historical daily and monthly bhavcopy and analyze traded volumes, close prices, and turnover metrics. Includes the Turnover Assessment dashboard and AMFI category/industry classification filters.",
+    "details": [
+      "Historical Turnover (granular time-series)",
+      "Historical Prices (close prices & adjustments)",
+      "Index History (Nifty & Sensex ratios)",
+      "Data Archives (bulk & block deal databases)"
+    ]
+  },
+  {
+    "title": "Turnover Assessment Dashboard",
+    "subtitle": "Equity Delivery & Traded Volume Analysis",
+    "url": "turnover_assement.html",
+    "category": "Historical Analytics",
+    "description": "Analyze equity delivery turnover, daily and monthly volume trends, percentage delivery across stocks. Filter by cap sizes, delivery ranges, and export CSV/Excel reports.",
+    "details": [
+      "Daily & Monthly Turnover (granular analysis)",
+      "Volume Trends & Delivery % ratios",
+      "Sector & Cap-Size classifications",
+      "Excel & CSV data exporting and downloads"
+    ]
+  },
+  {
+    "title": "Institutional & Participant Activity",
+    "subtitle": "FII, FPI & DII Flows",
+    "url": "institutional_activity.html",
+    "category": "Market Participant Flow",
+    "description": "Monitor FII/FPI net transactions, mutual fund (DII) flows, and client category trading volume. Keep tabs on institutional market sentiment and retail/HNI/NRI volume shares.",
+    "details": [
+      "FII/FPI Flows (cash & derivatives)",
+      "DII Activities (mutual fund aggregates)",
+      "Client Segment (retail & HNI volumes)",
+      "Margin Trading (short sales & balances)"
+    ]
+  },
+  {
+    "title": "Regulatory, Compliance & Educational Data",
+    "subtitle": "SEBI Mandates & Investor Resources",
+    "url": "regulatory_compliance.html",
+    "category": "Policy & Compliance",
+    "description": "Access SEBI regulations, listing compliance reports, and investor education resources. Ensure adherence to exchange guidelines, bylaws, circuit margins, and grievance procedures.",
+    "details": [
+      "SEBI Circulars (policy mandates & updates)",
+      "Listing Status (corporate compliance lists)",
+      "Exchange Bylaws (trading rules & circuit margins)",
+      "Investor Education (FAQ guides & grievance forms)"
+    ]
+  }
+]

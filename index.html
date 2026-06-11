@@ -464,6 +464,162 @@
       transform: scale(0.98);
       pointer-events: none;
     }
+
+    /* Search results dropdown styles */
+    .search-results-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      max-height: 380px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .search-results-dropdown.hidden {
+      display: none !important;
+    }
+
+    .search-result-item {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: background var(--transition-speed), border-left var(--transition-speed);
+      border-left: 3px solid transparent;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    body.light-theme .search-result-item {
+      border-bottom-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .search-result-item:last-child {
+      border-bottom: none;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+
+    .search-result-item:first-child {
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+
+    .search-result-item:hover,
+    .search-result-item.keyboard-active {
+      background: var(--suggestion-hover-bg);
+      border-left-color: var(--accent-primary);
+      outline: none;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .result-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      transition: color var(--transition-speed);
+    }
+
+    .search-result-item:hover .result-title,
+    .search-result-item.keyboard-active .result-title {
+      color: var(--accent-secondary);
+    }
+
+    .result-category {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      background: rgba(99, 102, 241, 0.1);
+      padding: 2px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    body.light-theme .result-category {
+      background: rgba(79, 70, 229, 0.08);
+      color: var(--accent-primary);
+    }
+
+    .result-subtitle {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--accent-purple);
+    }
+
+    .result-desc {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-top: 2px;
+    }
+
+    .result-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .result-detail-tag {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    body.light-theme .result-detail-tag {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .search-highlight {
+      background: rgba(99, 102, 241, 0.25);
+      color: var(--accent-secondary);
+      border-radius: 2px;
+      padding: 0 2px;
+      font-weight: 600;
+    }
+
+    body.light-theme .search-highlight {
+      background: rgba(79, 70, 229, 0.15);
+      color: var(--accent-primary);
+    }
+
+    .search-results-dropdown::-webkit-scrollbar {
+      width: 6px;
+    }
+    .search-results-dropdown::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .search-results-dropdown::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 3px;
+    }
+    .search-results-dropdown::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-primary);
+    }
   </style>
 </head>
 <body>
@@ -497,7 +653,7 @@
     <div class="search-section">
       <div class="search-title">
         <h2>Explore Khoj Repository</h2>
-        <p>Search companies, symbols, features or tool titles</p>
+        <p>Search dashboard pages, feature descriptions, or analytical tools</p>
       </div>
 
       <div class="search-box-container">
@@ -505,7 +661,8 @@
           <svg class="search-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input type="text" id="repo-search" class="search-input" placeholder="Type company symbol (e.g. RELIANCE, TCS) or tool keyword..." oninput="handleSearchInput(event)" onkeydown="handleSearchKey(event)">
+          <input type="text" id="repo-search" class="search-input" placeholder="Type page title, description, or keyword (e.g. turnover, derivatives)..." oninput="handleSearchInput(event)" onkeydown="handleSearchKey(event)" autocomplete="off">
+          <div id="search-results-dropdown" class="search-results-dropdown hidden"></div>
         </div>
         <button class="search-btn" onclick="triggerSearchRedirect()">
           Search
@@ -515,11 +672,11 @@
       <!-- Suggestions -->
       <div class="suggestions">
         <span class="suggestion-label">Suggestions:</span>
-        <span class="suggestion-tag" onclick="prefillSearch('RELIANCE')">RELIANCE</span>
-        <span class="suggestion-tag" onclick="prefillSearch('TCS')">TCS</span>
-        <span class="suggestion-tag" onclick="prefillSearch('AMFI')">AMFI Sector</span>
-        <span class="suggestion-tag" onclick="prefillSearch('Turnover')">Turnover</span>
-        <span class="suggestion-tag" onclick="prefillSearch('Charts')">Charts</span>
+        <span class="suggestion-tag" onclick="prefillSearch('Market Data')">Market Data</span>
+        <span class="suggestion-tag" onclick="prefillSearch('Corporate Disclosures')">Corporate Disclosures</span>
+        <span class="suggestion-tag" onclick="prefillSearch('Derivatives Data')">Derivatives Data</span>
+        <span class="suggestion-tag" onclick="prefillSearch('Historical & Analytical')">Historical & Analytical</span>
+        <span class="suggestion-tag" onclick="prefillSearch('Turnover Assessment')">Turnover Assessment</span>
       </div>
     </div>
 
@@ -792,59 +949,125 @@
   </main>
 
   <script>
-    // Tool details and keywords for the search matching
-    const TOOLS = [
+    let keyboardSelectedIndex = -1;
+    let visibleSearchResults = [];
+
+    // Fallback data if JSON fetch fails (e.g. CORS on file:// protocol)
+    const SEARCH_INDEX_FALLBACK = [
       {
-        id: 'card-market',
-        url: 'market_data.html',
-        keywords: [
-          'market', 'data', 'realtime', 'real-time', 'snapshots', 'equity', 'derivatives', 'debt', 'money', 
-          'live', 'ticks', 'prices', 'order book', 'depth', 'websocket', 'streams', 'feed'
+        "title": "Market Data",
+        "subtitle": "Real-time & Snapshots",
+        "url": "market_data.html",
+        "category": "Real-time Trading & Pricing",
+        "description": "Monitor live equity, derivatives, and debt markets. Analyze order book depth, price ticks, and real-time volume snapshots. WebSocket high-frequency order book logs, bond yields, call money rates, and top gainers/losers.",
+        "details": [
+          "Equity Market Snapshot (prices & gainers)",
+          "Derivatives Depth (live Open Interest)",
+          "Debt & Money (government bonds & call money)",
+          "Live Tick Feeds (WebSocket logs)"
         ]
       },
       {
-        id: 'card-disclosures',
-        url: 'corporate_disclosures.html',
-        keywords: [
-          'corporate', 'disclosures', 'filings', 'board meetings', 'financials', 'results', 'shareholding', 
-          'patterns', 'insider', 'trading', 'actions', 'dividends', 'splits', 'sebi', 'announcements'
+        "title": "Corporate Disclosures & Filings",
+        "subtitle": "SEBI Filings & Board Meetings",
+        "url": "corporate_disclosures.html",
+        "category": "Compliance & Corporate Actions",
+        "description": "Track statutory filings, board meetings, insider trading reports, and corporate actions. Access clean structured disclosures, Shareholding Patterns, and promoters details in real-time.",
+        "details": [
+          "Financial Results (SEBI quarterly audits)",
+          "Shareholding Patterns (promoter & institutional)",
+          "Insider Trading (Form C/D acquisition filings)",
+          "Corporate Actions (dividend splits & mergers)"
         ]
       },
       {
-        id: 'card-derivatives',
-        url: 'derivatives_data.html',
-        keywords: [
-          'derivatives', 'segment', 'f&o', 'options', 'futures', 'open interest', 'oi', 'pcr', 'rollover', 
-          'currency', 'commodity', 'gold', 'crude', 'g-sec', 'yield', 'interest rate'
+        "title": "Derivatives & Segment-Specific Data",
+        "subtitle": "F&O Option Chains & Roll-overs",
+        "url": "derivatives_data.html",
+        "category": "F&O Analytics",
+        "description": "Deep dive into Equity, Currency, and Commodity derivatives. Review Open Interest (OI) distribution, PCR ratio, yield-to-maturity tracking, and rollover analytics.",
+        "details": [
+          "Equity Derivatives (option chains & futures)",
+          "Currency F&O (USDINR, EURINR volume charts)",
+          "Commodity Data (gold & crude margins)",
+          "Interest Rate Futures (YTM tracking)"
         ]
       },
       {
-        id: 'card-historical',
-        url: 'historical_analytical.html',
-        keywords: [
-          'historial', 'historical', 'analytical', 'data', 'turnover', 'bhavcopy', 
-          'volume', 'price', 'market', 'stock', 'chart', 'graph', 'trend', 
-          'amfi', 'category', 'industry', 'classification', 'zone', 'city',
-          'daily', 'monthly', 'ingestion', 'csv', 'prices', 'archives', 'index history'
+        "title": "Historical & Analytical Data",
+        "subtitle": "Bhavcopy & Turnover Trends",
+        "url": "historical_analytical.html",
+        "category": "Historical Archives",
+        "description": "Load historical daily and monthly bhavcopy and analyze traded volumes, close prices, and turnover metrics. Includes the Turnover Assessment dashboard and AMFI category/industry classification filters.",
+        "details": [
+          "Historical Turnover (granular time-series)",
+          "Historical Prices (close prices & adjustments)",
+          "Index History (Nifty & Sensex ratios)",
+          "Data Archives (bulk & block deal databases)"
         ]
       },
       {
-        id: 'card-institutional',
-        url: 'institutional_activity.html',
-        keywords: [
-          'institutional', 'participant', 'activity', 'fii', 'fpi', 'dii', 'mutual fund', 'flows', 
-          'client', 'category', 'retail', 'pro', 'prop', 'nri', 'margin', 'short sales'
+        "title": "Turnover Assessment Dashboard",
+        "subtitle": "Equity Delivery & Traded Volume Analysis",
+        "url": "turnover_assement.html",
+        "category": "Historical Analytics",
+        "description": "Analyze equity delivery turnover, daily and monthly volume trends, percentage delivery across stocks. Filter by cap sizes, delivery ranges, and export CSV/Excel reports.",
+        "details": [
+          "Daily & Monthly Turnover (granular analysis)",
+          "Volume Trends & Delivery % ratios",
+          "Sector & Cap-Size classifications",
+          "Excel & CSV data exporting and downloads"
         ]
       },
       {
-        id: 'card-regulatory',
-        url: 'regulatory_compliance.html',
-        keywords: [
-          'regulatory', 'compliance', 'educational', 'sebi', 'circulars', 'rules', 'listing', 
-          'exchange', 'bylaws', 'investor', 'protection', 'education', 'faqs', 'grievance'
+        "title": "Institutional & Participant Activity",
+        "subtitle": "FII, FPI & DII Flows",
+        "url": "institutional_activity.html",
+        "category": "Market Participant Flow",
+        "description": "Monitor FII/FPI net transactions, mutual fund (DII) flows, and client category trading volume. Keep tabs on institutional market sentiment and retail/HNI/NRI volume shares.",
+        "details": [
+          "FII/FPI Flows (cash & derivatives)",
+          "DII Activities (mutual fund aggregates)",
+          "Client Segment (retail & HNI volumes)",
+          "Margin Trading (short sales & balances)"
+        ]
+      },
+      {
+        "title": "Regulatory, Compliance & Educational Data",
+        "subtitle": "SEBI Mandates & Investor Resources",
+        "url": "regulatory_compliance.html",
+        "category": "Policy & Compliance",
+        "description": "Access SEBI regulations, listing compliance reports, and investor education resources. Ensure adherence to exchange guidelines, bylaws, circuit margins, and grievance procedures.",
+        "details": [
+          "SEBI Circulars (policy mandates & updates)",
+          "Listing Status (corporate compliance lists)",
+          "Exchange Bylaws (trading rules & circuit margins)",
+          "Investor Education (FAQ guides & grievance forms)"
         ]
       }
     ];
+
+    // Initialize searchIndex immediately from fallback
+    let searchIndex = SEARCH_INDEX_FALLBACK;
+
+    // Load search index from file if possible
+    async function loadSearchIndex() {
+      try {
+        const response = await fetch('search_index.json');
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            searchIndex = data;
+            console.log('Search index loaded dynamically from JSON.');
+          }
+        }
+      } catch (error) {
+        console.warn('Using local fallback search index:', error.message);
+      }
+    }
+
+    // Initialize search index fetch
+    loadSearchIndex();
 
     // Theme Management
     function toggleTheme() {
@@ -885,21 +1108,67 @@
       const input = document.getElementById('repo-search');
       input.value = term;
       input.focus();
-      // Trigger matching
+      // Trigger matching & search dropdown
       matchCards(term);
+      performSearch(term);
     }
 
     function handleSearchInput(e) {
-      matchCards(e.target.value);
+      const val = e.target.value;
+      matchCards(val);
+      performSearch(val);
     }
 
     function handleSearchKey(e) {
-      if (e.key === 'Enter') {
-        triggerSearchRedirect();
+      const dropdown = document.getElementById('search-results-dropdown');
+      
+      if (dropdown.classList.contains('hidden') || visibleSearchResults.length === 0) {
+        if (e.key === 'Enter') {
+          triggerSearchRedirect();
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        keyboardSelectedIndex++;
+        if (keyboardSelectedIndex >= visibleSearchResults.length) {
+          keyboardSelectedIndex = 0;
+        }
+        updateKeyboardActiveItem();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        keyboardSelectedIndex--;
+        if (keyboardSelectedIndex < 0) {
+          keyboardSelectedIndex = visibleSearchResults.length - 1;
+        }
+        updateKeyboardActiveItem();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (keyboardSelectedIndex >= 0 && keyboardSelectedIndex < visibleSearchResults.length) {
+          handleResultItemClick(visibleSearchResults[keyboardSelectedIndex].url);
+        } else {
+          // Fallback to first result
+          handleResultItemClick(visibleSearchResults[0].url);
+        }
+      } else if (e.key === 'Escape') {
+        dropdown.classList.add('hidden');
       }
     }
 
-    // Filters cards on the page based on keywords, title, or search tags
+    function updateKeyboardActiveItem() {
+      const items = document.querySelectorAll('.search-result-item');
+      items.forEach((item, idx) => {
+        if (idx === keyboardSelectedIndex) {
+          item.classList.add('keyboard-active');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('keyboard-active');
+        }
+      });
+    }
+
+    // Filters cards on the page based on searchIndex matches using word tokenization (AND matching)
     function matchCards(query) {
       const cleanQuery = query.toLowerCase().trim();
       const cardsGrid = document.getElementById('cards-grid');
@@ -907,8 +1176,9 @@
       
       if (!cleanQuery) {
         // Reset state
-        TOOLS.forEach(tool => {
-          const card = document.getElementById(tool.id);
+        searchIndex.forEach(item => {
+          const cardId = getCardIdByUrl(item.url);
+          const card = document.getElementById(cardId);
           if (card) card.classList.remove('fade-out');
         });
         cardsGrid.style.display = 'grid';
@@ -916,20 +1186,37 @@
         return;
       }
 
+      const queryWords = cleanQuery.split(/\s+/).filter(Boolean);
+
+      // Find which URLs match the query
+      const matchedUrls = searchIndex.filter(item => {
+        if (queryWords.length === 0) return false;
+        // Verify every query word matches at least one field of this page item
+        return queryWords.every(word => {
+          return item.title.toLowerCase().includes(word) ||
+                 item.subtitle.toLowerCase().includes(word) ||
+                 item.description.toLowerCase().includes(word) ||
+                 item.category.toLowerCase().includes(word) ||
+                 item.details.some(d => d.toLowerCase().includes(word));
+        });
+      }).map(item => item.url);
+
       let matchCount = 0;
+      const cardIds = ['card-market', 'card-disclosures', 'card-derivatives', 'card-historical', 'card-institutional', 'card-regulatory'];
       
-      TOOLS.forEach(tool => {
-        const card = document.getElementById(tool.id);
+      cardIds.forEach(cardId => {
+        const card = document.getElementById(cardId);
         if (!card) return;
 
-        // Check title text inside card
-        const titleElement = card.querySelector('.card-title');
-        const titleText = titleElement ? titleElement.textContent.toLowerCase() : '';
+        let urls = [];
+        if (cardId === 'card-market') urls = ['market_data.html'];
+        else if (cardId === 'card-disclosures') urls = ['corporate_disclosures.html'];
+        else if (cardId === 'card-derivatives') urls = ['derivatives_data.html'];
+        else if (cardId === 'card-historical') urls = ['historical_analytical.html', 'turnover_assement.html'];
+        else if (cardId === 'card-institutional') urls = ['institutional_activity.html'];
+        else if (cardId === 'card-regulatory') urls = ['regulatory_compliance.html'];
 
-        // Check if query is in keywords or title
-        const isMatch = tool.keywords.some(kw => kw.includes(cleanQuery)) || 
-                        titleText.includes(cleanQuery);
-
+        const isMatch = urls.some(url => matchedUrls.includes(url));
         if (isMatch) {
           card.classList.remove('fade-out');
           matchCount++;
@@ -947,7 +1234,117 @@
       }
     }
 
-    // Handles card clicks. If search query is present, it appends it to the url
+    function getCardIdByUrl(url) {
+      if (url === 'market_data.html') return 'card-market';
+      if (url === 'corporate_disclosures.html') return 'card-disclosures';
+      if (url === 'derivatives_data.html') return 'card-derivatives';
+      if (url === 'historical_analytical.html' || url === 'turnover_assement.html') return 'card-historical';
+      if (url === 'institutional_activity.html') return 'card-institutional';
+      if (url === 'regulatory_compliance.html') return 'card-regulatory';
+      return null;
+    }
+
+    function performSearch(query) {
+      const cleanQuery = query.toLowerCase().trim();
+      const dropdown = document.getElementById('search-results-dropdown');
+      
+      if (!cleanQuery) {
+        dropdown.innerHTML = '';
+        dropdown.classList.add('hidden');
+        keyboardSelectedIndex = -1;
+        visibleSearchResults = [];
+        return;
+      }
+
+      const queryWords = cleanQuery.split(/\s+/).filter(Boolean);
+
+      // Filter matched items (all query words must match in some field)
+      const matches = searchIndex.filter(item => {
+        if (queryWords.length === 0) return false;
+        return queryWords.every(word => {
+          return item.title.toLowerCase().includes(word) ||
+                 item.subtitle.toLowerCase().includes(word) ||
+                 item.description.toLowerCase().includes(word) ||
+                 item.category.toLowerCase().includes(word) ||
+                 item.details.some(d => d.toLowerCase().includes(word));
+        });
+      });
+
+      visibleSearchResults = matches.slice(0, 4);
+
+      if (visibleSearchResults.length === 0) {
+        dropdown.innerHTML = `
+          <div style="padding: 18px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            No matching pages found for "${escapeHtml(query)}"
+          </div>
+        `;
+        dropdown.classList.remove('hidden');
+        keyboardSelectedIndex = -1;
+        return;
+      }
+
+      keyboardSelectedIndex = -1;
+      
+      // Render dropdown items
+      dropdown.innerHTML = visibleSearchResults.map((item, idx) => {
+        const highlightedTitle = highlightTerm(item.title, cleanQuery);
+        const highlightedSubtitle = highlightTerm(item.subtitle, cleanQuery);
+        const highlightedDesc = highlightTerm(item.description, cleanQuery);
+        const highlightedCategory = highlightTerm(item.category, cleanQuery);
+        
+        const detailTags = item.details
+          .map(d => `<span class="result-detail-tag">${highlightTerm(d, cleanQuery)}</span>`)
+          .join('');
+
+        return `
+          <div class="search-result-item" data-index="${idx}" onclick="handleResultItemClick('${item.url}')">
+            <div class="result-header">
+              <span class="result-title">${highlightTitle}</span>
+              <span class="result-category">${highlightedCategory}</span>
+            </div>
+            <div class="result-subtitle">${highlightedSubtitle}</div>
+            <div class="result-desc">${highlightedDesc}</div>
+            <div class="result-details">${detailTags}</div>
+          </div>
+        `;
+      }).join('');
+
+      dropdown.classList.remove('hidden');
+    }
+
+    // Helper to highlight matches of each query word using mark tags
+    function highlightTerm(text, query) {
+      if (!query) return text;
+      const words = query.split(/\s+/).filter(Boolean);
+      if (words.length === 0) return text;
+
+      let highlightedText = text;
+      // Sort words by length descending to match longer phrases/words first
+      const sortedWords = [...new Set(words)].sort((a, b) => b.length - a.length);
+
+      sortedWords.forEach(word => {
+        const escapedWord = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        // Avoid matching query word inside already created HTML tags/attributes
+        const regex = new RegExp(`(${escapedWord})(?![^<>]*>)`, 'gi');
+        highlightedText = highlightedText.replace(regex, '<mark class="search-highlight">$1</mark>');
+      });
+
+      return highlightedText;
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function handleResultItemClick(url) {
+      window.location.href = url;
+    }
+
     function handleCardClick(baseUrl) {
       const query = document.getElementById('repo-search').value.trim();
       if (query) {
@@ -961,21 +1358,34 @@
       window.location.href = baseUrl;
     }
 
-    // Triggered when Search button or Enter key is pressed.
-    // Navigates to the first visible card with query parameter
     function triggerSearchRedirect() {
-      // Find the first visible card that is not faded out
-      const visibleCard = Array.from(document.querySelectorAll('.dashboard-card')).find(card => !card.classList.contains('fade-out'));
-      if (visibleCard) {
-        const tool = TOOLS.find(t => t.id === visibleCard.id);
-        if (tool) {
-          handleCardClick(tool.url);
-          return;
-        }
+      if (visibleSearchResults.length > 0) {
+        handleResultItemClick(visibleSearchResults[0].url);
+      } else {
+        window.location.href = 'historical_analytical.html';
       }
-      // Fallback
-      handleCardClick('historical_analytical.html');
     }
+
+    // Dismiss dropdown on click outside
+    document.addEventListener('click', (e) => {
+      const searchBox = document.querySelector('.search-box-container');
+      const dropdown = document.getElementById('search-results-dropdown');
+      if (searchBox && !searchBox.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    // Re-show dropdown on input focus if it has value
+    window.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('repo-search');
+      if (searchInput) {
+        searchInput.addEventListener('focus', (e) => {
+          if (e.target.value.trim()) {
+            performSearch(e.target.value);
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
