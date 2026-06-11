@@ -111,55 +111,40 @@
       background: rgba(255, 255, 255, 0.2);
     }
 
-    /* Layout */
-    .dashboard-container {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      min-height: 100vh;
-      position: relative;
-    }
-
-    @media (max-width: 1024px) {
-      .dashboard-container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Sidebar Styles */
-    aside {
-      background: var(--sidebar-bg);
-      border-right: 1px solid var(--card-border);
-      padding: 24px;
+    /* Header Styles */
+    header {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 24px;
       display: flex;
-      flex-direction: column;
-      gap: 24px;
-      backdrop-filter: blur(10px);
+      justify-content: space-between;
+      align-items: center;
     }
 
     .logo-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      text-decoration: none;
     }
 
     .logo-icon {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      border-radius: 8px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       color: white;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      font-size: 1.3rem;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     }
 
     .logo-text h1 {
-      font-size: 1.15rem;
+      font-size: 1.3rem;
       font-weight: 700;
       background: linear-gradient(to right, var(--logo-text-gradient-start), var(--logo-text-gradient-end));
       -webkit-background-clip: text;
@@ -168,7 +153,7 @@
     }
 
     .logo-text p {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
     }
 
@@ -206,36 +191,90 @@
       border-color: var(--accent-primary);
     }
 
-    .search-input {
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      color: var(--text-main);
-      font-family: inherit;
-      font-size: 0.9rem;
+    /* Navigation Bar */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       width: 100%;
-      outline: none;
-      transition: border-color var(--transition-speed);
     }
 
-    .search-input:focus {
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: var(--suggestion-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      transition: all var(--transition-speed);
+    }
+
+    .back-btn:hover {
+      background: var(--suggestion-hover-bg);
       border-color: var(--accent-primary);
+      transform: translateX(-4px);
+    }
+
+    .back-btn-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Page Header */
+    .page-header {
+      width: 100%;
+    }
+
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, var(--text-main), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 800px;
+    }
+
+    /* Chart Filters Row styling */
+    .chart-filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-line-subtle);
+      margin-bottom: 8px;
+    }
+
+    .chart-filters-row .control-section {
+      flex: 1 1 180px;
+      min-width: 140px;
     }
 
     /* Main Content */
     main {
-      padding: 24px 32px;
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-      overflow-y: auto;
-      max-height: 100vh;
+      padding: 40px 24px 80px 24px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      gap: 32px;
     }
 
     @media (max-width: 768px) {
       main {
-        padding: 16px;
+        padding: 24px 16px 60px 16px;
       }
     }
 
@@ -782,160 +821,161 @@
     <input type="file" id="file-inputs-raw" multiple accept=".csv" onchange="handleFileSelection(event)">
   </div>
 
-  <!-- Dashboard Main Layout -->
-  <div class="dashboard-container">
-    
-    <!-- Sidebar Controls -->
-    <aside>
-      <div class="logo-container">
-        <div class="logo-icon">T</div>
-        <div class="logo-text">
-          <h1>Turnover Assessment</h1>
-          <p>Market Data Analytics</p>
-        </div>
-        <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
-          <!-- Moon Icon -->
-          <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-          <!-- Sun Icon -->
-          <svg class="theme-icon sun-icon hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-          </svg>
-        </button>
+  <!-- Header -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <div class="logo-icon">K</div>
+      <div class="logo-text">
+        <h1>Khoj Hub</h1>
+        <p>Market Intelligence Engine</p>
       </div>
+    </a>
 
-      <!-- Filters Panel -->
-      <div class="control-section">
-        <div class="control-label">Search Company</div>
-        <input type="text" id="company-search" class="search-input" placeholder="Type symbol or name..." oninput="applyFiltersAndRefresh()">
-      </div>
+    <button id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+      <!-- Moon Icon -->
+      <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+      <!-- Sun Icon -->
+      <svg class="theme-icon sun-icon hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+      </svg>
+    </button>
+  </header>
 
-      <!-- Filter Dropdowns generated dynamically from control_menu.csv -->
-      <div class="control-section" id="dynamic-filters-box">
-        <!-- filters added on the fly -->
-      </div>
+  <!-- Main Content Area -->
+  <main>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <a href="historical_analytical.html" class="back-btn">
+        <svg class="back-btn-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Historical & Analytical Data
+      </a>
+    </div>
 
-      <div class="control-section m-t-auto" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
-        <div class="control-label">Source Info</div>
-        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
-          Data dynamic parsed from loaded files. Toggle variables to customize calculations.
-        </p>
-      </div>
-    </aside>
-
-    <!-- Main Workspace -->
-    <main>
+    <!-- Page Header -->
+    <div class="page-header">
+      <h2 class="page-title">Turnover Assessment Dashboard</h2>
+      <p class="page-desc">
+        Analyze daily/monthly market turnover, trading volumes, and close prices. Use the filters below to dynamically update visualizations.
+      </p>
+    </div>
       
-      <!-- Top Configurations Bar -->
-      <div class="top-controls-bar">
-        <div class="row-flex">
-          
-          <!-- Mode Selector (Daily / Monthly) -->
-          <div class="d-flex flex-column gap-2">
-            <div class="control-label">Mode Selector</div>
-            <div class="btn-group" id="mode-btn-group">
-              <button class="btn-group-btn active" onclick="setMode('daily')">Daily Data</button>
-              <button class="btn-group-btn" onclick="setMode('monthly')">Monthly Data</button>
-            </div>
-          </div>
-
-          <!-- Dynamic Aggregation Dimension Button Group -->
-          <div class="d-flex flex-column gap-2">
-            <div class="control-label">Aggregation Dimension</div>
-            <div class="btn-group" id="agg-btn-group">
-              <button class="btn-group-btn active" id="btn-agg-default" onclick="setAggDimension('default')">Company (Default)</button>
-              <!-- Dinamically loaded buttons from control_menu -->
-            </div>
-          </div>
-
-          <!-- Time-based Aggregation buttons -->
-          <div class="d-flex flex-column gap-2">
-            <div class="control-label">Time Grouping</div>
-            <div class="btn-group" id="time-group-btn-group">
-              <!-- Dynamically populated depending on mode -->
-            </div>
-          </div>
-
-        </div>
-
-        <div style="border-top: 1px solid rgba(255,255,255,0.05); margin: 15px 0 5px 0;"></div>
-
-        <!-- Date Range Slider -->
-        <div class="slider-container">
-          <div class="slider-labels">
-            <span>Date Range Slider:</span>
-            <span id="slider-range-text" style="font-weight: 600; color: var(--accent-secondary);">Loading dates...</span>
-          </div>
-          <div class="slider-wrapper">
-            <div class="slider-track" id="slider-track"></div>
-            <input type="range" class="slider-input" id="slider-min" oninput="slideMin()">
-            <input type="range" class="slider-input" id="slider-max" oninput="slideMax()">
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Dashboard Cards -->
-      <div class="dashboard-grid">
+    <!-- Top Configurations Bar -->
+    <div class="top-controls-bar">
+      <div class="row-flex">
         
-        <!-- Table Card -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title" id="table-card-title">Turnover Aggregations</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);" id="table-row-count">Showing 0 rows</div>
-          </div>
-          <div class="table-container">
-            <table id="main-data-table">
-              <thead>
-                <tr id="table-headers">
-                  <!-- Dynamic Headers -->
-                </tr>
-              </thead>
-              <tbody id="table-body">
-                <!-- Dynamic Content -->
-              </tbody>
-            </table>
+        <!-- Mode Selector (Daily / Monthly) -->
+        <div class="d-flex flex-column gap-2">
+          <div class="control-label">Mode Selector</div>
+          <div class="btn-group" id="mode-btn-group">
+            <button class="btn-group-btn active" onclick="setMode('daily')">Daily Data</button>
+            <button class="btn-group-btn" onclick="setMode('monthly')">Monthly Data</button>
           </div>
         </div>
 
-        <!-- Chart Card -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Trend Visualization</div>
-            <div class="chart-controls">
-              
-              <!-- X Axis Selector -->
-              <div class="d-flex gap-2" style="align-items: center;">
-                <span style="font-size: 0.8rem; color: var(--text-muted);">X Axis:</span>
-                <select id="chart-x-axis" class="filter-select" style="padding: 4px 8px; width: 140px; font-size: 0.8rem;" onchange="updateChart()">
-                  <option value="time">Time Period</option>
-                  <!-- Din values populated on demand -->
-                </select>
-              </div>
-
-              <!-- Y Axis Selector -->
-              <div class="d-flex gap-2" style="align-items: center;">
-                <span style="font-size: 0.8rem; color: var(--text-muted);">Y Axis:</span>
-                <select id="chart-y-axis" class="filter-select" style="padding: 4px 8px; width: 140px; font-size: 0.8rem;" onchange="updateChart()">
-                  <option value="turnover">Turnover (Cr ₹)</option>
-                  <option value="volume">Traded Volume</option>
-                  <option value="price">Avg Close Price</option>
-                </select>
-              </div>
-
-            </div>
+        <!-- Dynamic Aggregation Dimension Button Group -->
+        <div class="d-flex flex-column gap-2">
+          <div class="control-label">Aggregation Dimension</div>
+          <div class="btn-group" id="agg-btn-group">
+            <button class="btn-group-btn active" id="btn-agg-default" onclick="setAggDimension('default')">Company (Default)</button>
+            <!-- Dinamically loaded buttons from control_menu -->
           </div>
-          <div style="height: 380px; position: relative; width: 100%;">
-            <canvas id="analyticsChart"></canvas>
+        </div>
+
+        <!-- Time-based Aggregation buttons -->
+        <div class="d-flex flex-column gap-2">
+          <div class="control-label">Time Grouping</div>
+          <div class="btn-group" id="time-group-btn-group">
+            <!-- Dynamically populated depending on mode -->
           </div>
         </div>
 
       </div>
 
-    </main>
+      <div style="border-top: 1px solid rgba(255,255,255,0.05); margin: 15px 0 5px 0;"></div>
 
-  </div>
+      <!-- Date Range Slider -->
+      <div class="slider-container">
+        <div class="slider-labels">
+          <span>Date Range Slider:</span>
+          <span id="slider-range-text" style="font-weight: 600; color: var(--accent-secondary);">Loading dates...</span>
+        </div>
+        <div class="slider-wrapper">
+          <div class="slider-track" id="slider-track"></div>
+          <input type="range" class="slider-input" id="slider-min" oninput="slideMin()">
+          <input type="range" class="slider-input" id="slider-max" oninput="slideMax()">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+      
+      <!-- Table Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="table-card-title">Turnover Aggregations</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);" id="table-row-count">Showing 0 rows</div>
+        </div>
+        <div class="table-container">
+          <table id="main-data-table">
+            <thead>
+              <tr id="table-headers">
+                <!-- Dynamic Headers -->
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <!-- Dynamic Content -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Chart Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Trend Visualization</div>
+          <div class="chart-controls">
+            
+            <!-- X Axis Selector -->
+            <div class="d-flex gap-2" style="align-items: center;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">X Axis:</span>
+              <select id="chart-x-axis" class="filter-select" style="padding: 4px 8px; width: 140px; font-size: 0.8rem;" onchange="updateChart()">
+                <option value="time">Time Period</option>
+                <!-- Din values populated on demand -->
+              </select>
+            </div>
+
+            <!-- Y Axis Selector -->
+            <div class="d-flex gap-2" style="align-items: center;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Y Axis:</span>
+              <select id="chart-y-axis" class="filter-select" style="padding: 4px 8px; width: 140px; font-size: 0.8rem;" onchange="updateChart()">
+                <option value="turnover">Turnover (Cr ₹)</option>
+                <option value="volume">Traded Volume</option>
+                <option value="price">Avg Close Price</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Filter Dropdowns generated dynamically from control_menu.csv -->
+        <div class="chart-filters-row" id="dynamic-filters-box">
+          <!-- filters added on the fly -->
+        </div>
+
+        <div style="height: 380px; position: relative; width: 100%;">
+          <canvas id="analyticsChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
 
   <script>
     // Theme Management and Initialization
@@ -1194,15 +1234,6 @@
         // 4. Initialize global dimensions filters & inputs
         initializeFiltersAndControls();
 
-        // 4.5. Check for URL search parameter and pre-fill search box
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchVal = urlParams.get('search');
-        if (searchVal) {
-          const searchInput = document.getElementById('company-search');
-          if (searchInput) {
-            searchInput.value = searchVal;
-          }
-        }
 
         // 5. Hide Loader Screen
         document.getElementById('loader-screen').classList.add('hidden');
@@ -1752,8 +1783,6 @@
       const minTS = state.dateList[state.activeRange.minIdx] || 0;
       const maxTS = state.dateList[state.activeRange.maxIdx] || 0;
       
-      const search = document.getElementById('company-search').value.toLowerCase().trim();
-
       return dataset.filter(row => {
         // Date range filter
         if (!row.timestamp || row.timestamp < minTS || row.timestamp > maxTS) return false;
@@ -1764,14 +1793,6 @@
         if (state.dynamicFilters.issuerType !== 'All' && row.issuerType !== state.dynamicFilters.issuerType) return false;
         if (state.dynamicFilters.city !== 'All' && row.city !== state.dynamicFilters.city) return false;
         if (state.dynamicFilters.zone !== 'All' && row.zone !== state.dynamicFilters.zone) return false;
-
-        // Text Search
-        if (search) {
-          const compName = (row.companyName || '').toLowerCase();
-          const symbol = (row.SYMBOL || '').toLowerCase();
-          const isin = (row.ISIN || '').toLowerCase();
-          if (!compName.includes(search) && !symbol.includes(search) && !isin.includes(search)) return false;
-        }
 
         return true;
       });

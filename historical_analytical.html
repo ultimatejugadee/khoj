@@ -561,13 +561,7 @@
   <script>
     // Forward search query to the turnover assessment dashboard if present
     function handleCardClick(targetUrl) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const searchQuery = urlParams.get('search');
-      if (searchQuery && targetUrl === 'turnover_assement.html') {
-        window.location.href = `${targetUrl}?search=${encodeURIComponent(searchQuery)}`;
-      } else {
-        window.location.href = targetUrl;
-      }
+      window.location.href = targetUrl;
     }
 
     // Theme Management
