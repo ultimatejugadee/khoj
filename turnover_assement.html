@@ -191,6 +191,98 @@
       border-color: var(--accent-primary);
     }
 
+    /* Custom Multiselect styles */
+    .custom-multiselect {
+      position: relative;
+      width: 100%;
+    }
+
+    .multiselect-trigger {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border-color var(--transition-speed);
+      text-align: left;
+    }
+
+    .multiselect-trigger:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .trigger-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 85%;
+    }
+
+    .chevron-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: transform var(--transition-speed);
+    }
+
+    .custom-multiselect.open .chevron-icon {
+      transform: rotate(180deg);
+    }
+
+    .multiselect-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--sidebar-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      margin-top: 4px;
+      max-height: 240px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      padding: 8px 0;
+    }
+
+    .multiselect-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      transition: background var(--transition-speed);
+      user-select: none;
+    }
+
+    .multiselect-option:hover {
+      background: var(--btn-hover-bg);
+    }
+
+    .multiselect-option input[type="checkbox"] {
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+      accent-color: var(--accent-primary);
+    }
+
+    .multiselect-option-label {
+      flex-grow: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     /* Navigation Bar */
     .nav-bar {
       display: flex;
@@ -1449,17 +1541,25 @@
 
         if (!dataField) return;
 
-        // Create filter dropdown
+        // Create custom multiselect filter dropdown HTML
         const filterWrapper = document.createElement('div');
         filterWrapper.className = 'control-section';
         filterWrapper.innerHTML = `
           <div class="control-label">Filter ${label}</div>
-          <select id="filter-${dataField}" class="filter-select" onchange="applyFiltersAndRefresh()">
-            <option value="All">All ${label}s</option>
-          </select>
+          <div class="custom-multiselect" id="multiselect-${dataField}">
+            <button class="multiselect-trigger" onclick="event.stopPropagation(); toggleMultiselectDropdown('${dataField}')">
+              <span class="trigger-text" id="multiselect-text-${dataField}">All ${label}s</span>
+              <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="multiselect-options hidden" id="multiselect-options-${dataField}" onclick="event.stopPropagation()">
+              <!-- Dynamic checkboxes will go here -->
+            </div>
+          </div>
         `;
         filtersBox.appendChild(filterWrapper);
-        state.dynamicFilters[dataField] = 'All'; // Init state
+        state.dynamicFilters[dataField] = ['All']; // Init state
 
         // Create aggregation button
         const btn = document.createElement('button');
@@ -1499,20 +1599,140 @@
       });
 
       Object.entries(uniqueValues).forEach(([field, set]) => {
-        const select = document.getElementById(`filter-${field}`);
-        if (!select) return;
-        
-        // Sort and add values
+        const optionsBox = document.getElementById(`multiselect-options-${field}`);
+        if (!optionsBox) return;
+
+        optionsBox.innerHTML = '';
+
+        // 1. Add "Select All" Option
+        const selectAllDiv = document.createElement('div');
+        selectAllDiv.className = 'multiselect-option';
+        selectAllDiv.innerHTML = `
+          <input type="checkbox" id="chk-${field}-all" checked onchange="handleSelectAllChange('${field}', this.checked)">
+          <span class="multiselect-option-label" style="font-weight: 600;">Select All</span>
+        `;
+        optionsBox.appendChild(selectAllDiv);
+
+        // Sort and add other values
         const sortedVals = Array.from(set).sort();
         sortedVals.forEach(val => {
           if (val && val !== 'NA') {
-            const opt = document.createElement('option');
-            opt.value = val;
-            opt.innerText = val;
-            select.appendChild(opt);
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'multiselect-option';
+            optionDiv.innerHTML = `
+              <input type="checkbox" class="chk-${field}-item" data-value="${val}" checked onchange="handleOptionCheckboxChange('${field}')">
+              <span class="multiselect-option-label">${val}</span>
+            `;
+            // Allow clicking the label/row to toggle checkbox
+            optionDiv.onclick = (e) => {
+              if (e.target.tagName !== 'INPUT') {
+                const checkbox = optionDiv.querySelector('input');
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+              }
+            };
+            optionsBox.appendChild(optionDiv);
           }
         });
+        
+        // Initialize trigger text
+        updateMultiselectTriggerText(field);
       });
+    }
+
+    // Helper functions for Custom Multiselect
+    function toggleMultiselectDropdown(field) {
+      const container = document.getElementById(`multiselect-${field}`);
+      const options = document.getElementById(`multiselect-options-${field}`);
+      
+      if (!container || !options) return;
+
+      const isHidden = options.classList.contains('hidden');
+
+      // Close all first
+      closeAllMultiselectDropdowns();
+
+      if (isHidden) {
+        container.classList.add('open');
+        options.classList.remove('hidden');
+      }
+    }
+
+    // Close all custom multiselect dropdowns
+    function closeAllMultiselectDropdowns() {
+      const dropdowns = document.querySelectorAll('.custom-multiselect');
+      dropdowns.forEach(dd => {
+        dd.classList.remove('open');
+      });
+
+      const optionsBoxes = document.querySelectorAll('.multiselect-options');
+      optionsBoxes.forEach(box => {
+        box.classList.add('hidden');
+      });
+    }
+
+    // Close dropdowns when clicking outside
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.custom-multiselect')) {
+        closeAllMultiselectDropdowns();
+      }
+    });
+
+    function handleSelectAllChange(field, checked) {
+      const itemCheckboxes = document.querySelectorAll(`.chk-${field}-item`);
+      itemCheckboxes.forEach(chk => {
+        chk.checked = checked;
+      });
+      applyFiltersAndRefresh();
+    }
+
+    function handleOptionCheckboxChange(field) {
+      applyFiltersAndRefresh();
+    }
+
+    function updateMultiselectTriggerText(field) {
+      const allCheckbox = document.getElementById(`chk-${field}-all`);
+      const itemCheckboxes = document.querySelectorAll(`.chk-${field}-item`);
+      const triggerTextSpan = document.getElementById(`multiselect-text-${field}`);
+      if (!triggerTextSpan) return;
+
+      const total = itemCheckboxes.length;
+      if (total === 0) {
+        let label = field.charAt(0).toUpperCase() + field.slice(1);
+        triggerTextSpan.innerText = `All ${label}s`;
+        return;
+      }
+
+      const checkedItems = Array.from(itemCheckboxes).filter(chk => chk.checked);
+      const checkedCount = checkedItems.length;
+
+      let fieldLabel = '';
+      state.parsedData.control.forEach(ctrl => {
+        let dataField = '';
+        if (ctrl.Menu_List === 'Category') dataField = 'category';
+        else if (ctrl.Menu_List === 'Industry_Classification') dataField = 'industry';
+        else if (ctrl.Menu_List === 'Issuer_Type') dataField = 'issuerType';
+        else if (ctrl.Menu_List === 'Corporate_Office_City') dataField = 'city';
+        else if (ctrl.Menu_List === 'Zone') dataField = 'zone';
+        if (dataField === field) fieldLabel = ctrl.Labels;
+      });
+
+      if (checkedCount === total) {
+        triggerTextSpan.innerText = `All ${fieldLabel}s`;
+        if (allCheckbox) allCheckbox.checked = true;
+      } else if (checkedCount === 0) {
+        triggerTextSpan.innerText = `None Selected`;
+        if (allCheckbox) allCheckbox.checked = false;
+      } else if (checkedCount === 1) {
+        triggerTextSpan.innerText = checkedItems[0].dataset.value;
+        if (allCheckbox) allCheckbox.checked = false;
+      } else if (checkedCount <= 2) {
+        triggerTextSpan.innerText = checkedItems.map(chk => chk.dataset.value).join(', ');
+        if (allCheckbox) allCheckbox.checked = false;
+      } else {
+        triggerTextSpan.innerText = `${checkedCount} Selected`;
+        if (allCheckbox) allCheckbox.checked = false;
+      }
     }
 
     // Core Controls Toggles
@@ -1745,17 +1965,25 @@
 
     // Read dropdown filter values
     function applyFiltersAndRefresh() {
-      // Fetch dynamic filter values
+      // Fetch dynamic filter values from custom multiselect checkboxes
       Object.keys(state.dynamicFilters).forEach(field => {
-        const select = document.getElementById(`filter-${field}`);
-        if (select) {
-          state.dynamicFilters[field] = select.value;
+        const itemCheckboxes = document.querySelectorAll(`.chk-${field}-item`);
+        if (itemCheckboxes.length > 0) {
+          const checkedItems = Array.from(itemCheckboxes).filter(chk => chk.checked);
+          const total = itemCheckboxes.length;
+          if (checkedItems.length === total) {
+            state.dynamicFilters[field] = ['All'];
+          } else {
+            state.dynamicFilters[field] = checkedItems.map(chk => chk.dataset.value);
+          }
+        } else {
+          state.dynamicFilters[field] = ['All'];
         }
+
+        // Update trigger text representation
+        updateMultiselectTriggerText(field);
       });
 
-      // Clear expanded list to avoid rendering errors on dataset shifts
-      // Keep them only if rows actually exist
-      
       // Update Table & Chart
       renderAggregationTable();
       updateChart();
@@ -1879,12 +2107,12 @@
         // Date range filter
         if (!row.timestamp || row.timestamp < minTS || row.timestamp > maxTS) return false;
 
-        // Dynamic select filters
-        if (state.dynamicFilters.category !== 'All' && row.category !== state.dynamicFilters.category) return false;
-        if (state.dynamicFilters.industry !== 'All' && row.industry !== state.dynamicFilters.industry) return false;
-        if (state.dynamicFilters.issuerType !== 'All' && row.issuerType !== state.dynamicFilters.issuerType) return false;
-        if (state.dynamicFilters.city !== 'All' && row.city !== state.dynamicFilters.city) return false;
-        if (state.dynamicFilters.zone !== 'All' && row.zone !== state.dynamicFilters.zone) return false;
+        // Dynamic select filters (multi-select arrays)
+        if (!state.dynamicFilters.category.includes('All') && !state.dynamicFilters.category.includes(row.category)) return false;
+        if (!state.dynamicFilters.industry.includes('All') && !state.dynamicFilters.industry.includes(row.industry)) return false;
+        if (!state.dynamicFilters.issuerType.includes('All') && !state.dynamicFilters.issuerType.includes(row.issuerType)) return false;
+        if (!state.dynamicFilters.city.includes('All') && !state.dynamicFilters.city.includes(row.city)) return false;
+        if (!state.dynamicFilters.zone.includes('All') && !state.dynamicFilters.zone.includes(row.zone)) return false;
 
         return true;
       });
