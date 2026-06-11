@@ -306,10 +306,18 @@
       flex-direction: column;
       gap: 16px;
       backdrop-filter: blur(12px);
-      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.3s ease, order 0s;
       position: relative;
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
       overflow: hidden;
+      order: 0;
+    }
+
+    .dashboard-card.fade-out {
+      opacity: 0.12;
+      transform: scale(0.96);
+      pointer-events: none;
+      order: 99;
     }
 
     /* Neon Gradient Border Hover Effect */
@@ -459,11 +467,7 @@
       opacity: 0.5;
     }
 
-    .fade-out {
-      opacity: 0.15;
-      transform: scale(0.98);
-      pointer-events: none;
-    }
+    /* .fade-out is now handled by .dashboard-card.fade-out above */
 
     /* Search results dropdown styles */
     .search-results-dropdown {
@@ -1168,18 +1172,21 @@
       });
     }
 
-    // Filters cards on the page based on searchIndex matches using word tokenization (AND matching)
+    // Filters AND reorders cards on the page based on searchIndex matches
     function matchCards(query) {
       const cleanQuery = query.toLowerCase().trim();
       const cardsGrid = document.getElementById('cards-grid');
       const noResults = document.getElementById('no-results-box');
+      const cardIds = ['card-market', 'card-disclosures', 'card-derivatives', 'card-historical', 'card-institutional', 'card-regulatory'];
       
       if (!cleanQuery) {
-        // Reset state
-        searchIndex.forEach(item => {
-          const cardId = getCardIdByUrl(item.url);
+        // Reset: remove fade-out and reset order for all cards
+        cardIds.forEach((cardId, idx) => {
           const card = document.getElementById(cardId);
-          if (card) card.classList.remove('fade-out');
+          if (card) {
+            card.classList.remove('fade-out');
+            card.style.order = idx;
+          }
         });
         cardsGrid.style.display = 'grid';
         noResults.style.display = 'none';
@@ -1191,7 +1198,6 @@
       // Find which URLs match the query
       const matchedUrls = searchIndex.filter(item => {
         if (queryWords.length === 0) return false;
-        // Verify every query word matches at least one field of this page item
         return queryWords.every(word => {
           return item.title.toLowerCase().includes(word) ||
                  item.subtitle.toLowerCase().includes(word) ||
@@ -1201,27 +1207,33 @@
         });
       }).map(item => item.url);
 
+      const cardUrlMap = {
+        'card-market': ['market_data.html'],
+        'card-disclosures': ['corporate_disclosures.html'],
+        'card-derivatives': ['derivatives_data.html'],
+        'card-historical': ['historical_analytical.html', 'turnover_assement.html'],
+        'card-institutional': ['institutional_activity.html'],
+        'card-regulatory': ['regulatory_compliance.html']
+      };
+
       let matchCount = 0;
-      const cardIds = ['card-market', 'card-disclosures', 'card-derivatives', 'card-historical', 'card-institutional', 'card-regulatory'];
-      
+      let matchOrder = 0;
+      let nonMatchOrder = cardIds.length;
+
+      // First pass: classify and assign order
       cardIds.forEach(cardId => {
         const card = document.getElementById(cardId);
         if (!card) return;
-
-        let urls = [];
-        if (cardId === 'card-market') urls = ['market_data.html'];
-        else if (cardId === 'card-disclosures') urls = ['corporate_disclosures.html'];
-        else if (cardId === 'card-derivatives') urls = ['derivatives_data.html'];
-        else if (cardId === 'card-historical') urls = ['historical_analytical.html', 'turnover_assement.html'];
-        else if (cardId === 'card-institutional') urls = ['institutional_activity.html'];
-        else if (cardId === 'card-regulatory') urls = ['regulatory_compliance.html'];
-
+        const urls = cardUrlMap[cardId] || [];
         const isMatch = urls.some(url => matchedUrls.includes(url));
+
         if (isMatch) {
           card.classList.remove('fade-out');
+          card.style.order = matchOrder++;
           matchCount++;
         } else {
           card.classList.add('fade-out');
+          card.style.order = nonMatchOrder++;
         }
       });
 
@@ -1270,6 +1282,17 @@
         });
       });
 
+      // Direct/leaf pages (no own card on homepage) surface first
+      const categoryPageUrls = new Set([
+        'market_data.html', 'corporate_disclosures.html', 'derivatives_data.html',
+        'historical_analytical.html', 'institutional_activity.html', 'regulatory_compliance.html'
+      ]);
+      matches.sort((a, b) => {
+        const aIsDirect = !categoryPageUrls.has(a.url) ? 0 : 1;
+        const bIsDirect = !categoryPageUrls.has(b.url) ? 0 : 1;
+        return aIsDirect - bIsDirect;
+      });
+
       visibleSearchResults = matches.slice(0, 4);
 
       if (visibleSearchResults.length === 0) {
@@ -1299,7 +1322,7 @@
         return `
           <div class="search-result-item" data-index="${idx}" onclick="handleResultItemClick('${item.url}')">
             <div class="result-header">
-              <span class="result-title">${highlightTitle}</span>
+              <span class="result-title">${highlightedTitle}</span>
               <span class="result-category">${highlightedCategory}</span>
             </div>
             <div class="result-subtitle">${highlightedSubtitle}</div>
