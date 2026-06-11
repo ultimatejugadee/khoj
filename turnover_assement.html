@@ -796,6 +796,36 @@
       background: var(--accent-primary) !important;
       color: white !important;
     }
+
+    /* Download Button styling */
+    .download-btn {
+      background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-speed);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+    }
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+      filter: brightness(1.1);
+    }
+    .download-btn:active {
+      transform: translateY(0);
+    }
+    .download-icon {
+      width: 18px;
+      height: 18px;
+    }
   </style>
 </head>
 <body>
@@ -891,6 +921,17 @@
           <div class="btn-group" id="time-group-btn-group">
             <!-- Dynamically populated depending on mode -->
           </div>
+        </div>
+
+        <!-- Download Button -->
+        <div class="d-flex flex-column gap-2">
+          <div class="control-label">Export Data</div>
+          <button class="download-btn" onclick="downloadCSV()" title="Download current filtered data as CSV">
+            <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download CSV
+          </button>
         </div>
 
       </div>
@@ -2279,6 +2320,65 @@
           }
         }
       });
+    }
+
+    // Export current filtered rows in CSV format
+    function downloadCSV() {
+      const filtered = getFilteredRows();
+      if (!filtered || filtered.length === 0) {
+        alert('No data available to download.');
+        return;
+      }
+
+      // Format data for CSV with user-friendly headers
+      const dataToExport = filtered.map(row => ({
+        'Trade Date': row.TradDt || '',
+        'Symbol': row.SYMBOL || '',
+        'ISIN': row.ISIN || '',
+        'Company Name': row.companyName || '',
+        'Category': row.category || '',
+        'Industry Classification': row.industry || '',
+        'Issuer Type': row.issuerType || '',
+        'Corporate Office City': row.city || '',
+        'Zone': row.zone || '',
+        'Open Price': row.OpnPric || '',
+        'High Price': row.HghPric || '',
+        'Low Price': row.LwPric || '',
+        'Close Price': row.ClsPric || '',
+        'Last Price': row.LastPric || '',
+        'Previous Close Price': row.PrvsClsgPric || '',
+        'Traded Volume': row.TtlTradgVol || '',
+        'Turnover': row.TtlTrfVal || ''
+      }));
+
+      // Convert to CSV using PapaParse (already loaded on page)
+      const csv = Papa.unparse(dataToExport);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      
+      // Handle download link
+      const link = document.createElement("a");
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        
+        // Format filenames dynamically based on mode and dates
+        const minIdx = state.activeRange.minIdx;
+        const maxIdx = state.activeRange.maxIdx;
+        const fmt = (d) => {
+          const dd = String(d.getDate()).padStart(2, '0');
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const yyyy = d.getFullYear();
+          return `${dd}-${mm}-${yyyy}`;
+        };
+        const minDateText = state.dateList[minIdx] ? fmt(new Date(state.dateList[minIdx])) : 'start';
+        const maxDateText = state.dateList[maxIdx] ? fmt(new Date(state.dateList[maxIdx])) : 'end';
+        
+        link.setAttribute("href", url);
+        link.setAttribute("download", `bhavcopy_${state.currentMode}_${minDateText}_to_${maxDateText}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     }
 
   </script>
