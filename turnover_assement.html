@@ -923,6 +923,15 @@
           </div>
         </div>
 
+        <!-- Numeric Scale Selector (Crore/Lakh / Billion/Million) -->
+        <div class="d-flex flex-column gap-2">
+          <div class="control-label">Numeric Scale</div>
+          <div class="btn-group" id="scale-btn-group">
+            <button class="btn-group-btn active" onclick="setNumericSystem('indian')">Crore / Lakh</button>
+            <button class="btn-group-btn" onclick="setNumericSystem('western')">Billion / Million</button>
+          </div>
+        </div>
+
         <!-- Download Button -->
         <div class="d-flex flex-column gap-2">
           <div class="control-label">Export Data</div>
@@ -1082,6 +1091,7 @@
       currentMode: 'daily', // 'daily' or 'monthly'
       currentAggDimension: 'default', // 'default' or dimension field name e.g. 'Category'
       currentTimeGrouping: 'default', // 'default', 'weekly', 'semimonthly', 'monthly', etc.
+      numericSystem: 'indian', // 'indian' (Crore/Lakh) or 'western' (Billion/Million)
       activeRange: { minIdx: 0, maxIdx: 100 }, // date slider indices
       dateList: [], // sorted unique dates in the current dataset
       rawFiles: {
@@ -1562,6 +1572,21 @@
       applyFiltersAndRefresh();
     }
 
+    function setNumericSystem(system) {
+      state.numericSystem = system;
+
+      // Update scale button active styles
+      const scaleGroup = document.getElementById('scale-btn-group');
+      if (scaleGroup) {
+        Array.from(scaleGroup.children).forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('onclick').includes(system));
+        });
+      }
+
+      // Refresh view
+      applyFiltersAndRefresh();
+    }
+
     // Time-based aggregation configurations
     function setupTimeGroupingButtons() {
       const container = document.getElementById('time-group-btn-group');
@@ -1799,23 +1824,47 @@
 
     // Number formating utils
     function formatTurnover(val) {
-      // Convert raw turnover (TtlTrfVal) to Crores (1 Cr = 10,000,000)
-      const cr = val / 10000000;
-      return `₹${cr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Cr`;
+      if (state.numericSystem === 'indian') {
+        const cr = val / 10000000;
+        return `₹${cr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Cr`;
+      } else {
+        if (val >= 1000000000) {
+          const bn = val / 1000000000;
+          return `₹${bn.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} B`;
+        }
+        const mn = val / 1000000;
+        return `₹${mn.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+      }
     }
 
     function formatVolume(val) {
-      // Format volume in Lakhs or Millions
-      if (val >= 1000000) {
-        const mil = val / 1000000;
-        return `${mil.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+      if (state.numericSystem === 'indian') {
+        if (val >= 10000000) {
+          const cr = val / 10000000;
+          return `${cr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Cr`;
+        } else if (val >= 100000) {
+          const lakhs = val / 100000;
+          return `${lakhs.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L`;
+        }
+        return val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+      } else {
+        if (val >= 1000000000) {
+          const bn = val / 1000000000;
+          return `${bn.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} B`;
+        } else if (val >= 1000000) {
+          const mn = val / 1000000;
+          return `${mn.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+        } else if (val >= 1000) {
+          const k = val / 1000;
+          return `${k.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} K`;
+        }
+        return val.toLocaleString('en-US', { maximumFractionDigits: 0 });
       }
-      const lakhs = val / 100000;
-      return `${lakhs.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L`;
     }
 
     function formatPrice(val) {
-      return `₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const locale = state.numericSystem === 'indian' ? 'en-IN' : 'en-US';
+      return `₹${val.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     // Filter raw rows based on current selected parameters
@@ -2225,9 +2274,25 @@
 
       // Generate labels & values lists
       const labels = sortedData.map(d => d.key);
+
+      // Determine western system turnover scale unit
+      let chartTurnoverUnit = 'M';
+      let chartTurnoverDivider = 1000000;
+      if (state.numericSystem === 'western') {
+        const maxTurnover = sortedData.length > 0 ? Math.max(...sortedData.map(d => d.turnover)) : 0;
+        if (maxTurnover >= 1000000000) {
+          chartTurnoverUnit = 'B';
+          chartTurnoverDivider = 1000000000;
+        }
+      }
+
       const dataPoints = sortedData.map(d => {
         if (yAxisVar === 'turnover') {
-          return d.turnover / 10000000; // in Crores
+          if (state.numericSystem === 'indian') {
+            return d.turnover / 10000000; // in Crores
+          } else {
+            return d.turnover / chartTurnoverDivider; // in Billions or Millions
+          }
         } else if (yAxisVar === 'volume') {
           return d.volume; // raw volume
         } else {
@@ -2236,7 +2301,14 @@
         }
       });
 
-      const yLabel = yAxisVar === 'turnover' ? 'Turnover (Cr ₹)' : (yAxisVar === 'volume' ? 'Traded Volume' : 'Avg Close Price (₹)');
+      let yLabel = '';
+      if (yAxisVar === 'turnover') {
+        yLabel = state.numericSystem === 'indian' ? 'Turnover (Cr ₹)' : `Turnover (${chartTurnoverUnit} ₹)`;
+      } else if (yAxisVar === 'volume') {
+        yLabel = 'Traded Volume';
+      } else {
+        yLabel = 'Avg Close Price (₹)';
+      }
 
       // Chart.js Drawing Configuration
       const ctx = document.getElementById('analyticsChart').getContext('2d');
@@ -2293,9 +2365,15 @@
               callbacks: {
                 label: function(context) {
                   let val = context.parsed.y;
-                  if (yAxisVar === 'turnover') return `Turnover: ₹${val.toFixed(2)} Cr`;
+                  if (yAxisVar === 'turnover') {
+                    if (state.numericSystem === 'indian') {
+                      return `Turnover: ₹${val.toFixed(2)} Cr`;
+                    } else {
+                      return `Turnover: ₹${val.toFixed(2)} ${chartTurnoverUnit}`;
+                    }
+                  }
                   if (yAxisVar === 'volume') return `Volume: ${formatVolume(val)}`;
-                  return `Price: ₹${val.toFixed(2)}`;
+                  return `Price: ${formatPrice(val)}`;
                 }
               }
             }
@@ -2316,7 +2394,20 @@
               },
               ticks: {
                 color: tickColor,
-                font: { family: 'Outfit', size: 11 }
+                font: { family: 'Outfit', size: 11 },
+                callback: function(value, index, values) {
+                  if (yAxisVar === 'turnover') {
+                    if (state.numericSystem === 'indian') {
+                      return value.toLocaleString('en-IN') + ' Cr';
+                    } else {
+                      return value.toLocaleString('en-US') + ' ' + chartTurnoverUnit;
+                    }
+                  } else if (yAxisVar === 'volume') {
+                    return formatVolume(value);
+                  } else {
+                    return formatPrice(value);
+                  }
+                }
               }
             }
           }
