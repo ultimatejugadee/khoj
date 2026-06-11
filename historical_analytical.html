@@ -364,7 +364,7 @@
     }
   </style>
 </head>
-<body>
+<body class="light-theme">
 
   <!-- Header -->
   <header>
@@ -588,14 +588,16 @@
     // Initialize Theme early
     (function() {
       const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'light') {
+      if (savedTheme === 'dark') {
+        document.body.classList.remove('light-theme');
+      } else {
         document.body.classList.add('light-theme');
       }
     })();
 
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('theme');
-      syncThemeIcons(savedTheme === 'light');
+      syncThemeIcons(savedTheme !== 'dark');
     });
   </script>
 </body>

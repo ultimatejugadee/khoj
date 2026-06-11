@@ -828,7 +828,7 @@
     }
   </style>
 </head>
-<body>
+<body class="light-theme">
 
   <!-- Loading State & Drag-and-Drop Fallback -->
   <div id="loader-screen" class="loader-overlay">
@@ -1045,7 +1045,9 @@
     // Initialize Theme early to prevent flicker
     (function() {
       const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'light') {
+      if (savedTheme === 'dark') {
+        document.body.classList.remove('light-theme');
+      } else {
         document.body.classList.add('light-theme');
       }
     })();
@@ -1056,7 +1058,7 @@
       const sunIcon = document.querySelector('.sun-icon');
       const moonIcon = document.querySelector('.moon-icon');
       if (sunIcon && moonIcon) {
-        if (savedTheme === 'light') {
+        if (savedTheme !== 'dark') {
           sunIcon.classList.remove('hidden');
           moonIcon.classList.add('hidden');
         } else {
