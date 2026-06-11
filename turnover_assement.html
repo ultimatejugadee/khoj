@@ -11,6 +11,8 @@
   
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js DataLabels Plugin CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
   <!-- PapaParse CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -235,6 +237,48 @@
 
     .custom-multiselect.open .chevron-icon {
       transform: rotate(180deg);
+    }
+
+    /* Y Axis Custom Multiselect styles */
+    .y-axis-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .action-btn {
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all var(--transition-speed);
+      padding: 0;
+    }
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+    body.light-theme .action-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    .action-btn.active.secondary-axis-btn {
+      color: var(--accent-secondary);
+      background: rgba(6, 182, 212, 0.15);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+    .action-btn.active.show-as-line-btn {
+      color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .action-icon {
+      width: 14px;
+      height: 14px;
     }
 
     .multiselect-options {
@@ -1234,13 +1278,96 @@
             </div>
 
             <!-- Y Axis Selector -->
-            <div class="d-flex gap-2" style="align-items: center;">
+            <div class="d-flex gap-2" style="align-items: center; position: relative;">
               <span style="font-size: 0.8rem; color: var(--text-muted);">Y Axis:</span>
-              <select id="chart-y-axis" class="filter-select" style="padding: 4px 8px; width: 140px; font-size: 0.8rem;" onchange="updateChart()">
-                <option value="turnover">Turnover (Cr ₹)</option>
-                <option value="volume">Traded Volume</option>
-                <option value="price">Avg Close Price</option>
-              </select>
+              <div class="custom-multiselect" id="multiselect-y-axis" style="width: 155px;">
+                <button class="multiselect-trigger" style="padding: 4px 8px; font-size: 0.8rem; height: 28px;" onclick="event.stopPropagation(); toggleMultiselectDropdown('y-axis')">
+                  <span class="trigger-text" id="multiselect-text-y-axis">Turnover</span>
+                  <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 12px; height: 12px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div class="multiselect-options hidden" id="multiselect-options-y-axis" style="width: 320px; right: 0; left: auto; padding: 4px 0;" onclick="event.stopPropagation()">
+                  <div class="multiselect-option" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                    <label class="d-flex align-items-center gap-2" style="flex-grow: 1; cursor: pointer; user-select: none; margin: 0;">
+                      <input type="checkbox" class="chk-y-axis-item" value="turnover" checked onchange="handleYAxisCheckboxChange(event)">
+                      <span class="multiselect-option-label">Turnover (Cr ₹)</span>
+                    </label>
+                    <div class="y-axis-actions">
+                      <button class="action-btn secondary-axis-btn" id="btn-sec-turnover" onclick="event.stopPropagation(); toggleSecondaryAxis('turnover')" title="Move to Secondary Axis">
+                        <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <line x1="18" y1="4" x2="18" y2="20"></line>
+                          <line x1="18" y1="8" x2="15" y2="8"></line>
+                          <line x1="18" y1="12" x2="15" y2="12"></line>
+                          <line x1="18" y1="16" x2="15" y2="16"></line>
+                          <path d="M4 12h8m-8-4h6m-6 8h4"></path>
+                        </svg>
+                      </button>
+                      <button class="action-btn show-as-line-btn" id="btn-line-turnover" onclick="event.stopPropagation(); toggleShowAsLine('turnover')" title="Show as Line (if X axis is not Time Period)">
+                        <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 3v18h18"></path>
+                          <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="multiselect-option" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                    <label class="d-flex align-items-center gap-2" style="flex-grow: 1; cursor: pointer; user-select: none; margin: 0;">
+                      <input type="checkbox" class="chk-y-axis-item" value="volume" onchange="handleYAxisCheckboxChange(event)">
+                      <span class="multiselect-option-label">Traded Volume</span>
+                    </label>
+                    <div class="y-axis-actions">
+                      <button class="action-btn secondary-axis-btn" id="btn-sec-volume" onclick="event.stopPropagation(); toggleSecondaryAxis('volume')" title="Move to Secondary Axis">
+                        <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <line x1="18" y1="4" x2="18" y2="20"></line>
+                          <line x1="18" y1="8" x2="15" y2="8"></line>
+                          <line x1="18" y1="12" x2="15" y2="12"></line>
+                          <line x1="18" y1="16" x2="15" y2="16"></line>
+                          <path d="M4 12h8m-8-4h6m-6 8h4"></path>
+                        </svg>
+                      </button>
+                      <button class="action-btn show-as-line-btn" id="btn-line-volume" onclick="event.stopPropagation(); toggleShowAsLine('volume')" title="Show as Line (if X axis is not Time Period)">
+                        <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 3v18h18"></path>
+                          <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="multiselect-option" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                    <label class="d-flex align-items-center gap-2" style="flex-grow: 1; cursor: pointer; user-select: none; margin: 0;">
+                      <input type="checkbox" class="chk-y-axis-item" value="price" onchange="handleYAxisCheckboxChange(event)">
+                      <span class="multiselect-option-label">Avg Close Price</span>
+                    </label>
+                    <div class="y-axis-actions">
+                      <button class="action-btn secondary-axis-btn" id="btn-sec-price" onclick="event.stopPropagation(); toggleSecondaryAxis('price')" title="Move to Secondary Axis">
+                        <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <line x1="18" y1="4" x2="18" y2="20"></line>
+                          <line x1="18" y1="8" x2="15" y2="8"></line>
+                          <line x1="18" y1="12" x2="15" y2="12"></line>
+                          <line x1="18" y1="16" x2="15" y2="16"></line>
+                          <path d="M4 12h8m-8-4h6m-6 8h4"></path>
+                        </svg>
+                      </button>
+                      <button class="action-btn show-as-line-btn" id="btn-line-price" onclick="event.stopPropagation(); toggleShowAsLine('price')" title="Show as Line (if X axis is not Time Period)">
+                        <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 3v18h18"></path>
+                          <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Show Labels Toggle -->
+            <div class="d-flex gap-2" style="align-items: center; margin-left: 8px;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Labels:</span>
+              <label class="d-flex align-items-center gap-1" style="font-size: 0.8rem; color: var(--text-main); cursor: pointer; user-select: none; margin: 0;">
+                <input type="checkbox" id="chart-show-labels" style="accent-color: var(--accent-primary); cursor: pointer;" onchange="toggleChartLabels(this.checked)">
+                Show
+              </label>
             </div>
 
           </div>
@@ -1377,7 +1504,11 @@
       dynamicFilters: {}, // Active values selected in filters e.g. { Category: 'All' }
       expandedRows: new Set(), // Level 1 expanded row IDs
       expandedSubRows: new Set(), // Level 2 expanded row IDs
-      chartInstance: null
+      chartInstance: null,
+      selectedYAxes: ['turnover'], // Selected Y-axis variables
+      secondaryYAxes: [], // Y-axis variables on secondary scale
+      lineYAxes: [], // Y-axis variables forced to render as lines on non-period charts
+      showChartLabels: false // Flag to display data labels directly on the chart
     };
 
     // Prefix for File_Name check
@@ -2031,7 +2162,69 @@
       applyFiltersAndRefresh();
     }
 
+    function handleYAxisCheckboxChange(event) {
+      const checkedBoxes = document.querySelectorAll('.chk-y-axis-item:checked');
+      if (checkedBoxes.length === 0) {
+        if (event && event.target) {
+          event.target.checked = true;
+        }
+        return;
+      }
+      state.selectedYAxes = Array.from(checkedBoxes).map(chk => chk.value);
+      updateMultiselectTriggerText('y-axis');
+      updateChart();
+    }
+
+    function toggleSecondaryAxis(field) {
+      const idx = state.secondaryYAxes.indexOf(field);
+      const btn = document.getElementById(`btn-sec-${field}`);
+      if (idx > -1) {
+        state.secondaryYAxes.splice(idx, 1);
+        if (btn) btn.classList.remove('active');
+      } else {
+        state.secondaryYAxes.push(field);
+        if (btn) btn.classList.add('active');
+      }
+      updateChart();
+    }
+
+    function toggleShowAsLine(field) {
+      const idx = state.lineYAxes.indexOf(field);
+      const btn = document.getElementById(`btn-line-${field}`);
+      if (idx > -1) {
+        state.lineYAxes.splice(idx, 1);
+        if (btn) btn.classList.remove('active');
+      } else {
+        state.lineYAxes.push(field);
+        if (btn) btn.classList.add('active');
+      }
+      updateChart();
+    }
+
+    function toggleChartLabels(checked) {
+      state.showChartLabels = checked;
+      updateChart();
+    }
+
     function updateMultiselectTriggerText(field) {
+      if (field === 'y-axis') {
+        const itemCheckboxes = document.querySelectorAll('.chk-y-axis-item');
+        const triggerTextSpan = document.getElementById('multiselect-text-y-axis');
+        if (!triggerTextSpan) return;
+        const checkedItems = Array.from(itemCheckboxes).filter(chk => chk.checked);
+        if (checkedItems.length === 0) {
+          triggerTextSpan.innerText = 'Select Y Axis';
+        } else {
+          const names = checkedItems.map(chk => {
+            if (chk.value === 'turnover') return 'Turnover';
+            if (chk.value === 'volume') return 'Volume';
+            return 'Price';
+          });
+          triggerTextSpan.innerText = names.join(', ');
+        }
+        return;
+      }
+
       const allCheckbox = document.getElementById(`chk-${field}-all`);
       const itemCheckboxes = document.querySelectorAll(`.chk-${field}-item`);
       const triggerTextSpan = document.getElementById(`multiselect-text-${field}`);
@@ -2797,11 +2990,88 @@
       }).join('');
     }
 
+    // Helper to get name of variable for labels/titles
+    function getYLabelName(yField, turnoverUnit) {
+      if (yField === 'turnover') {
+        return state.numericSystem === 'indian' ? 'Turnover (Cr ₹)' : `Turnover (${turnoverUnit} ₹)`;
+      } else if (yField === 'volume') {
+        return 'Traded Volume';
+      } else {
+        return 'Avg Close Price (₹)';
+      }
+    }
+
+    // Helper to get dataset visual styles
+    function getDatasetStyle(yField, isLine) {
+      const styles = {
+        turnover: {
+          color: '#6366f1', // Indigo
+          lineBg: 'rgba(99, 102, 241, 0.12)',
+          barBg: 'rgba(99, 102, 241, 0.7)'
+        },
+        volume: {
+          color: '#06b6d4', // Cyan
+          lineBg: 'rgba(6, 182, 212, 0.12)',
+          barBg: 'rgba(6, 182, 212, 0.7)'
+        },
+        price: {
+          color: '#a855f7', // Purple
+          lineBg: 'rgba(168, 85, 247, 0.12)',
+          barBg: 'rgba(168, 85, 247, 0.7)'
+        }
+      };
+
+      const style = styles[yField] || styles.turnover;
+      return {
+        borderColor: style.color,
+        backgroundColor: isLine ? style.lineBg : style.barBg,
+        borderWidth: 2.5,
+        fill: isLine && (state.selectedYAxes.length === 1), // Only fill if single line is shown
+        tension: 0.25,
+        pointRadius: isLine ? 3.5 : 0,
+        pointHoverRadius: 6,
+        pointBackgroundColor: style.color
+      };
+    }
+
+    // Helper to get custom Y-axis ticks formatter
+    function getAxisFormatter(fields, numericSystem, turnoverUnit, turnoverDivider) {
+      if (fields.length === 0) return (val) => val;
+      
+      if (fields.length === 1 || fields.every(f => f === fields[0])) {
+        const field = fields[0];
+        return (val) => {
+          if (field === 'turnover') {
+            if (numericSystem === 'indian') {
+              return val.toLocaleString('en-IN') + ' Cr';
+            } else {
+              return val.toLocaleString('en-US') + ' ' + turnoverUnit;
+            }
+          } else if (field === 'volume') {
+            return formatVolume(val);
+          } else {
+            return formatPrice(val);
+          }
+        };
+      }
+      
+      // Mixed fields tick format: compact representation
+      return (val) => {
+        if (Math.abs(val) >= 10000000) {
+          return (val / 10000000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'Cr';
+        } else if (Math.abs(val) >= 100000) {
+          return (val / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'L';
+        } else if (Math.abs(val) >= 1000) {
+          return (val / 1000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'K';
+        }
+        return val.toLocaleString();
+      };
+    }
+
     // Renders and updates Chart.js instance with selected X/Y axes configuration
     function updateChart() {
       const filtered = getFilteredRows();
       const xAxisVar = document.getElementById('chart-x-axis').value;
-      const yAxisVar = document.getElementById('chart-y-axis').value;
 
       // Group data by selected X variable
       const groups = {};
@@ -2837,8 +3107,20 @@
         // Sort chronologically (ascending for chart)
         sortedData.sort((a, b) => a.timestamp - b.timestamp);
       } else {
-        // Sort by value descending
-        sortedData.sort((a, b) => b.turnover - a.turnover);
+        // Sort by values descending using the first selected Y variable as sorting key
+        const sortVar = state.selectedYAxes[0] || 'turnover';
+        if (sortVar === 'turnover') {
+          sortedData.sort((a, b) => b.turnover - a.turnover);
+        } else if (sortVar === 'volume') {
+          sortedData.sort((a, b) => b.volume - a.volume);
+        } else {
+          // Average Close Price
+          sortedData.sort((a, b) => {
+            const priceA = a.priceWeight > 0 ? (a.weightedPriceSum / a.priceWeight) : 0;
+            const priceB = b.priceWeight > 0 ? (b.weightedPriceSum / b.priceWeight) : 0;
+            return priceB - priceA;
+          });
+        }
       }
 
       // Generate labels & values lists
@@ -2855,29 +3137,52 @@
         }
       }
 
-      const dataPoints = sortedData.map(d => {
-        if (yAxisVar === 'turnover') {
-          if (state.numericSystem === 'indian') {
-            return d.turnover / 10000000; // in Crores
+      // Generate datasets for Chart.js
+      const datasets = state.selectedYAxes.map(yField => {
+        const isSecondary = state.secondaryYAxes.includes(yField);
+        const isLine = (xAxisVar === 'time') || state.lineYAxes.includes(yField);
+        const datasetType = isLine ? 'line' : 'bar';
+
+        const dataPoints = sortedData.map(d => {
+          if (yField === 'turnover') {
+            if (state.numericSystem === 'indian') {
+              return d.turnover / 10000000; // in Crores
+            } else {
+              return d.turnover / chartTurnoverDivider; // in Billions or Millions
+            }
+          } else if (yField === 'volume') {
+            return d.volume; // raw volume
           } else {
-            return d.turnover / chartTurnoverDivider; // in Billions or Millions
+            // Average Close Price
+            return d.priceWeight > 0 ? (d.weightedPriceSum / d.priceWeight) : 0;
           }
-        } else if (yAxisVar === 'volume') {
-          return d.volume; // raw volume
-        } else {
-          // Average Close Price
-          return d.priceWeight > 0 ? (d.weightedPriceSum / d.priceWeight) : 0;
-        }
+        });
+
+        const style = getDatasetStyle(yField, isLine);
+
+        return {
+          type: datasetType,
+          label: getYLabelName(yField, chartTurnoverUnit),
+          data: dataPoints,
+          borderColor: style.borderColor,
+          backgroundColor: style.backgroundColor,
+          borderWidth: style.borderWidth,
+          fill: style.fill,
+          tension: 0.25,
+          pointRadius: style.pointRadius,
+          pointHoverRadius: 6,
+          pointBackgroundColor: style.borderColor,
+          yAxisID: isSecondary ? 'y2' : 'y',
+          yField: yField // Custom field for plugin/tooltip callback usage
+        };
       });
 
-      let yLabel = '';
-      if (yAxisVar === 'turnover') {
-        yLabel = state.numericSystem === 'indian' ? 'Turnover (Cr ₹)' : `Turnover (${chartTurnoverUnit} ₹)`;
-      } else if (yAxisVar === 'volume') {
-        yLabel = 'Traded Volume';
-      } else {
-        yLabel = 'Avg Close Price (₹)';
-      }
+      // Split axes fields to label Y-axes properly
+      const leftFields = state.selectedYAxes.filter(f => !state.secondaryYAxes.includes(f));
+      const rightFields = state.selectedYAxes.filter(f => state.secondaryYAxes.includes(f));
+
+      const leftAxisTitle = leftFields.map(f => getYLabelName(f, chartTurnoverUnit)).join(' / ');
+      const rightAxisTitle = rightFields.map(f => getYLabelName(f, chartTurnoverUnit)).join(' / ');
 
       // Chart.js Drawing Configuration
       const ctx = document.getElementById('analyticsChart').getContext('2d');
@@ -2885,9 +3190,6 @@
       if (state.chartInstance) {
         state.chartInstance.destroy();
       }
-
-      // Time uses Line chart, Dimensions use Bar chart
-      const chartType = xAxisVar === 'time' ? 'line' : 'bar';
 
       // Dynamic theme colors for Chart Grid and Ticks
       const isLight = document.body.classList.contains('light-theme');
@@ -2899,28 +3201,50 @@
       const tooltipBodyColor = isLight ? '#334155' : '#f3f4f6';
 
       state.chartInstance = new Chart(ctx, {
-        type: chartType,
+        type: xAxisVar === 'time' ? 'line' : 'bar',
+        plugins: [ChartDataLabels],
         data: {
           labels: labels,
-          datasets: [{
-            label: yLabel,
-            data: dataPoints,
-            borderColor: '#6366f1',
-            backgroundColor: chartType === 'line' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(6, 182, 212, 0.7)',
-            borderWidth: 2.5,
-            fill: chartType === 'line',
-            tension: 0.25,
-            pointRadius: chartType === 'line' ? 3.5 : 0,
-            pointHoverRadius: 6,
-            pointBackgroundColor: '#06b6d4'
-          }]
+          datasets: datasets
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: false
+              display: true,
+              position: 'top',
+              labels: {
+                color: tickColor,
+                font: { family: 'Outfit', size: 12 }
+              }
+            },
+            datalabels: {
+              display: state.showChartLabels ? 'auto' : false,
+              anchor: 'end',
+              align: 'top',
+              color: isLight ? '#0f172a' : '#f3f4f6',
+              backgroundColor: isLight ? 'rgba(255, 255, 255, 0.85)' : 'rgba(15, 23, 42, 0.85)',
+              borderColor: isLight ? 'rgba(15, 23, 42, 0.15)' : 'rgba(255, 255, 255, 0.15)',
+              borderWidth: 1,
+              borderRadius: 4,
+              padding: 4,
+              font: { family: 'Outfit', size: 9, weight: '600' },
+              offset: 4,
+              formatter: function(value, context) {
+                const yField = context.dataset.yField;
+                if (yField === 'turnover') {
+                  if (state.numericSystem === 'indian') {
+                    return `₹${value.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} Cr`;
+                  } else {
+                    return `₹${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${chartTurnoverUnit}`;
+                  }
+                } else if (yField === 'volume') {
+                  return formatVolume(value);
+                } else {
+                  return formatPrice(value);
+                }
+              }
             },
             tooltip: {
               backgroundColor: tooltipBg,
@@ -2933,15 +3257,16 @@
               padding: 12,
               callbacks: {
                 label: function(context) {
-                  let val = context.parsed.y;
-                  if (yAxisVar === 'turnover') {
+                  const yField = context.dataset.yField;
+                  const val = context.parsed.y;
+                  if (yField === 'turnover') {
                     if (state.numericSystem === 'indian') {
                       return `Turnover: ₹${val.toFixed(2)} Cr`;
                     } else {
                       return `Turnover: ₹${val.toFixed(2)} ${chartTurnoverUnit}`;
                     }
                   }
-                  if (yAxisVar === 'volume') return `Volume: ${formatVolume(val)}`;
+                  if (yField === 'volume') return `Volume: ${formatVolume(val)}`;
                   return `Price: ${formatPrice(val)}`;
                 }
               }
@@ -2958,25 +3283,39 @@
               }
             },
             y: {
+              position: 'left',
               grid: {
                 color: gridColor
               },
               ticks: {
                 color: tickColor,
                 font: { family: 'Outfit', size: 11 },
-                callback: function(value, index, values) {
-                  if (yAxisVar === 'turnover') {
-                    if (state.numericSystem === 'indian') {
-                      return value.toLocaleString('en-IN') + ' Cr';
-                    } else {
-                      return value.toLocaleString('en-US') + ' ' + chartTurnoverUnit;
-                    }
-                  } else if (yAxisVar === 'volume') {
-                    return formatVolume(value);
-                  } else {
-                    return formatPrice(value);
-                  }
-                }
+                callback: getAxisFormatter(leftFields, state.numericSystem, chartTurnoverUnit, chartTurnoverDivider)
+              },
+              title: {
+                display: leftFields.length > 0,
+                text: leftAxisTitle,
+                color: tickColor,
+                font: { family: 'Outfit', size: 12, weight: '500' }
+              }
+            },
+            y2: {
+              position: 'right',
+              display: rightFields.length > 0,
+              grid: {
+                drawOnChartArea: false,
+                color: gridColor
+              },
+              ticks: {
+                color: tickColor,
+                font: { family: 'Outfit', size: 11 },
+                callback: getAxisFormatter(rightFields, state.numericSystem, chartTurnoverUnit, chartTurnoverDivider)
+              },
+              title: {
+                display: rightFields.length > 0,
+                text: rightAxisTitle,
+                color: tickColor,
+                font: { family: 'Outfit', size: 12, weight: '500' }
               }
             }
           }
