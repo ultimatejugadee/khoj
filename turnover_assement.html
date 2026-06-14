@@ -559,7 +559,7 @@
     .card-title {
       font-size: 1.1rem;
       font-weight: 600;
-      color: white;
+      color: var(--text-main);
     }
 
     /* Table Styles */
@@ -725,7 +725,7 @@
     .loader-text {
       font-size: 1.1rem;
       font-weight: 500;
-      color: white;
+      color: var(--text-main);
     }
 
     .loader-sub {
@@ -877,6 +877,10 @@
       flex-direction: column;
       gap: 4px;
     }
+    body.light-theme .tag-compare-card {
+      background: rgba(0, 0, 0, 0.02);
+      border-color: rgba(15, 23, 42, 0.08);
+    }
 
     .tag-compare-title {
       font-size: 0.72rem;
@@ -888,7 +892,7 @@
     .tag-compare-value {
       font-size: 0.95rem;
       font-weight: 600;
-      color: white;
+      color: var(--text-main);
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
@@ -961,6 +965,36 @@
     .download-icon {
       width: 18px;
       height: 18px;
+    }
+
+    /* Corporate Filings Styling */
+    .filing-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all var(--transition-speed);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+    .filing-link-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+    body.light-theme .filing-link-btn {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.08);
+      color: var(--text-main);
+    }
+    body.light-theme .filing-link-btn:hover {
+      background: rgba(0, 0, 0, 0.07);
+      border-color: var(--accent-primary);
     }
 
     /* Variable Definition Headers, Tooltips, and Popups */
@@ -1418,6 +1452,77 @@
     </div>
   </div>
 
+  <!-- Dimension Details Popup Modal -->
+  <div id="details-popup-overlay" class="variable-popup-overlay hidden" onclick="closeDetailsPopupOutside(event)">
+    <div class="variable-popup-content" style="max-width: 900px; width: 95%;" onclick="event.stopPropagation()">
+      <button class="popup-close-btn" onclick="closeDetailsPopup()" aria-label="Close popup">&times;</button>
+      <div id="details-popup-title" class="popup-title">Dimension Details</div>
+      <div id="details-popup-subtitle" style="font-size: 0.85rem; color: var(--text-muted); margin-top: -12px; margin-bottom: 20px;">Active Selection Range</div>
+      
+      <div class="popup-grid" style="display: flex; flex-direction: column; gap: 24px;">
+        
+        <!-- Section 1: Peer Group Standings -->
+        <div class="popup-section">
+          <h4 id="details-popup-peer-title" style="font-size: 0.9rem; font-weight: 600; color: var(--accent-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+            Peer Group Comparison
+          </h4>
+          <div class="table-container" style="max-height: 180px; overflow-y: auto; border: 1px solid var(--border-line-subtle); border-radius: 8px;">
+            <table style="width: 100%;">
+              <thead>
+                <tr>
+                  <th style="width: 70px;">Rank</th>
+                  <th id="details-popup-peer-th">Peer Group</th>
+                  <th class="number-col">Total Turnover</th>
+                  <th class="number-col" style="width: 150px;">Company Count</th>
+                </tr>
+              </thead>
+              <tbody id="details-popup-peer-table-body">
+                <!-- Peer groups list goes here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 2: Companies List inside peer group -->
+        <div class="popup-section">
+          <h4 id="details-popup-company-title" style="font-size: 0.9rem; font-weight: 600; color: var(--accent-primary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+            Company Standings
+          </h4>
+          <div class="table-container" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--border-line-subtle); border-radius: 8px;">
+            <table style="width: 100%;">
+              <thead>
+                <tr>
+                  <th style="width: 70px;">Rank</th>
+                  <th>Company Info</th>
+                  <th class="number-col">Turnover</th>
+                  <th class="number-col">Volume</th>
+                  <th class="number-col">Avg Price</th>
+                  <th class="number-col" style="width: 140px;">Market Cap</th>
+                </tr>
+              </thead>
+              <tbody id="details-popup-table-body">
+                <!-- Dynamic rows go here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Corporate Filings Popup Modal -->
+  <div id="filings-popup-overlay" class="variable-popup-overlay hidden" onclick="closeFilingsPopupOutside(event)">
+    <div class="variable-popup-content" style="max-width: 750px; width: 92%;" onclick="event.stopPropagation()">
+      <button class="popup-close-btn" onclick="closeFilingsPopup()" aria-label="Close popup">&times;</button>
+      <div id="filings-popup-title" class="popup-title">Corporate Filings</div>
+      <div id="filings-popup-company" style="font-size: 0.9rem; color: var(--accent-secondary); margin-top: -12px; margin-bottom: 16px; font-weight: 600;">Company Details</div>
+      <div class="filings-scroll-container" id="filings-popup-list" style="max-height: 420px; overflow-y: auto; padding-right: 8px; display: flex; flex-direction: column;">
+        <!-- Dynamic filings list goes here -->
+      </div>
+    </div>
+  </div>
+
 
   <script>
     // Theme Management and Initialization
@@ -1508,7 +1613,8 @@
       selectedYAxes: ['turnover'], // Selected Y-axis variables
       secondaryYAxes: [], // Y-axis variables on secondary scale
       lineYAxes: [], // Y-axis variables forced to render as lines on non-period charts
-      showChartLabels: false // Flag to display data labels directly on the chart
+      showChartLabels: false, // Flag to display data labels directly on the chart
+      corporateFilings: null
     };
 
     // Prefix for File_Name check
@@ -1683,6 +1789,289 @@
     function closeVarPopupOutside(e) {
       if (e.target.id === 'variable-popup-overlay') {
         closeVarPopup();
+      }
+    }
+
+    // Dimension Details Popup logic
+    function showDimensionDetails(dataField, value, label, activeCompanySymbol) {
+      const overlay = document.getElementById('details-popup-overlay');
+      const title = document.getElementById('details-popup-title');
+      const subtitle = document.getElementById('details-popup-subtitle');
+      const tbody = document.getElementById('details-popup-table-body');
+      
+      if (!overlay || !title || !subtitle || !tbody) return;
+      
+      title.innerText = `Standings for ${label}: ${value}`;
+      
+      // Get formatted date range text for subtitle
+      const minIdx = state.activeRange.minIdx;
+      const maxIdx = state.activeRange.maxIdx;
+      const fmt = (d) => {
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${dd}-${mm}-${yyyy}`;
+      };
+      const minDateText = state.dateList[minIdx] ? fmt(new Date(state.dateList[minIdx])) : 'Start';
+      const maxDateText = state.dateList[maxIdx] ? fmt(new Date(state.dateList[maxIdx])) : 'End';
+      subtitle.innerText = `Active Selection: ${minDateText} to ${maxDateText}`;
+      
+      // Get all filtered rows
+      const filtered = getFilteredRows();
+      
+      // 1. Render Peer Group Standings
+      const peerGroups = {};
+      filtered.forEach(row => {
+        const peerValue = row[dataField] || 'Others';
+        if (!peerGroups[peerValue]) {
+          peerGroups[peerValue] = {
+            name: peerValue,
+            turnover: 0,
+            symbols: new Set()
+          };
+        }
+        peerGroups[peerValue].turnover += row.turnover;
+        peerGroups[peerValue].symbols.add(row.SYMBOL);
+      });
+      
+      const sortedPeers = Object.values(peerGroups).sort((a, b) => b.turnover - a.turnover);
+      
+      const peerTbody = document.getElementById('details-popup-peer-table-body');
+      const peerTh = document.getElementById('details-popup-peer-th');
+      const peerTitle = document.getElementById('details-popup-peer-title');
+      
+      if (peerTh) peerTh.innerText = `${label} Group`;
+      if (peerTitle) peerTitle.innerText = `Peer Group Standings (${label})`;
+      
+      if (peerTbody) {
+        peerTbody.innerHTML = '';
+        sortedPeers.forEach((pg, index) => {
+          const rank = index + 1;
+          const isCurrent = (pg.name.toLowerCase() === value.toLowerCase());
+          
+          const tr = document.createElement('tr');
+          if (isCurrent) {
+            tr.style.cssText = 'background: rgba(99, 102, 241, 0.15); font-weight: 600; border-left: 3px solid var(--accent-primary);';
+          }
+          
+          tr.innerHTML = `
+            <td style="font-weight: 600;">#${rank}</td>
+            <td>${pg.name} ${isCurrent ? ' <span class="badge badge-neutral" style="margin-left: 8px; font-size: 0.65rem; padding: 2px 6px;">Active</span>' : ''}</td>
+            <td class="number-col font-medium text-main">${formatTurnover(pg.turnover)}</td>
+            <td class="number-col">${pg.symbols.size} Companies</td>
+          `;
+          peerTbody.appendChild(tr);
+        });
+      }
+
+      // 2. Render Company Standings inside the current Peer Group
+      const matchingRows = filtered.filter(row => (row[dataField] || 'Others').toLowerCase() === value.toLowerCase());
+      
+      // Group by company symbol
+      const compGroups = {};
+      matchingRows.forEach(row => {
+        const symbol = row.SYMBOL;
+        if (!compGroups[symbol]) {
+          compGroups[symbol] = {
+            symbol: symbol,
+            name: row.companyName,
+            isin: row.ISIN,
+            turnover: 0,
+            volume: 0,
+            closePrice: 0,
+            weightedPriceSum: 0,
+            category: row.category,
+            rawRows: []
+          };
+        }
+        compGroups[symbol].turnover += row.turnover;
+        compGroups[symbol].volume += row.volume;
+        compGroups[symbol].weightedPriceSum += (row.closePrice * row.volume);
+        compGroups[symbol].rawRows.push(row);
+      });
+      
+      const sortedComps = Object.values(compGroups).sort((a, b) => b.turnover - a.turnover);
+      
+      const companyTitle = document.getElementById('details-popup-company-title');
+      if (companyTitle) {
+        companyTitle.innerText = `Company Standings inside "${value}"`;
+      }
+      
+      tbody.innerHTML = '';
+      if (sortedComps.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="padding: 20px; color: var(--text-muted);">No records in active scope.</td></tr>`;
+      } else {
+        sortedComps.forEach((comp, index) => {
+          const rank = index + 1;
+          const isCurrentCompany = (comp.symbol.toUpperCase() === (activeCompanySymbol || '').toUpperCase());
+          
+          let capBadge = '';
+          if (comp.category.toLowerCase().includes('large')) capBadge = `<span class="badge badge-largecap">Large Cap</span>`;
+          else if (comp.category.toLowerCase().includes('mid')) capBadge = `<span class="badge badge-midcap">Mid Cap</span>`;
+          else if (comp.category.toLowerCase().includes('small')) capBadge = `<span class="badge badge-smallcap">Small Cap</span>`;
+          else capBadge = `<span class="badge badge-neutral">${comp.category}</span>`;
+
+          const avgPrice = comp.volume > 0 ? (comp.weightedPriceSum / comp.volume) : comp.closePrice;
+          
+          const tr = document.createElement('tr');
+          if (isCurrentCompany) {
+            tr.style.cssText = 'background: rgba(6, 182, 212, 0.15); font-weight: 600; border-left: 3px solid var(--accent-secondary);';
+          }
+          
+          tr.innerHTML = `
+            <td style="font-weight: 600;">#${rank}</td>
+            <td>
+              <div style="font-weight:600; color: var(--text-main);">${comp.name} ${isCurrentCompany ? ' <span class="badge badge-neutral" style="margin-left: 8px; font-size: 0.65rem; padding: 2px 6px;">Selected</span>' : ''}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${comp.symbol} | ISIN: ${comp.isin}</div>
+            </td>
+            <td class="number-col font-medium text-main">${formatTurnover(comp.turnover)}</td>
+            <td class="number-col">${formatVolume(comp.volume)}</td>
+            <td class="number-col">${formatPrice(avgPrice)}</td>
+            <td class="number-col">${capBadge}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+      
+      overlay.classList.remove('hidden');
+      void overlay.offsetWidth; // force reflow
+      overlay.classList.add('visible');
+    }
+
+    function closeDetailsPopup() {
+      const overlay = document.getElementById('details-popup-overlay');
+      if (!overlay) return;
+      overlay.classList.remove('visible');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 300);
+    }
+    
+    function closeDetailsPopupOutside(e) {
+      if (e.target.id === 'details-popup-overlay') {
+        closeDetailsPopup();
+      }
+    }
+
+    // Corporate Filings Popup logic
+    function showCorporateFilings(symbol, name) {
+      const overlay = document.getElementById('filings-popup-overlay');
+      const companyHeader = document.getElementById('filings-popup-company');
+      const listContainer = document.getElementById('filings-popup-list');
+      
+      if (!overlay || !companyHeader || !listContainer) return;
+      
+      companyHeader.innerText = `${name} (${symbol})`;
+      listContainer.innerHTML = '<div style="padding: 20px; color: var(--text-muted); text-align: center;">Loading filings...</div>';
+      
+      overlay.classList.remove('hidden');
+      void overlay.offsetWidth; // force reflow
+      overlay.classList.add('visible');
+      
+      const renderFilings = (filings) => {
+        listContainer.innerHTML = '';
+        if (!filings || filings.length === 0) {
+          listContainer.innerHTML = '<div style="padding: 20px; color: var(--text-muted); text-align: center;">No filings found for this company.</div>';
+          return;
+        }
+        
+        filings.forEach(f => {
+          const item = document.createElement('div');
+          item.className = 'filing-item';
+          item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-line-subtle); gap: 16px;';
+          item.innerHTML = `
+            <div class="filing-details" style="flex: 1;">
+              <div class="filing-title" style="font-weight: 600; font-size: 0.95rem; color: var(--text-main); margin-bottom: 4px;">${f.title}</div>
+              <div class="filing-summary" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">${f.summary}</div>
+            </div>
+            <div class="filing-links" style="display: flex; gap: 10px; align-items: center; flex-shrink: 0;">
+              <a href="${f.pdf_url}" target="_blank" class="filing-link-btn" title="Download PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; color: #ef4444; stroke-width: 2.5;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Acrobat PDF
+              </a>
+              <a href="${f.xbrl_url}" target="_blank" class="filing-link-btn" title="Download XBRL">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 14px; height: 14px; color: #10b981; stroke-width: 2.5;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                XBRL
+              </a>
+            </div>
+          `;
+          listContainer.appendChild(item);
+        });
+      };
+      
+      if (state.corporateFilings) {
+        const filings = state.corporateFilings[symbol] || state.corporateFilings["DEFAULT"];
+        renderFilings(filings);
+      } else {
+        fetch('corporate_filings.json')
+          .then(res => {
+            if (!res.ok) throw new Error('Status ' + res.status);
+            return res.json();
+          })
+          .then(data => {
+            state.corporateFilings = data;
+            const filings = data[symbol] || data["DEFAULT"];
+            renderFilings(filings);
+          })
+          .catch(err => {
+            console.warn('Failed to load corporate filings JSON. Using fallback.', err);
+            // Standalone Fallback
+            state.corporateFilings = {
+              "DEFAULT": [
+                {
+                  "title": "Audited Financial Results for the Quarter and Year Ended March 31, 2026",
+                  "summary": "Standalone and consolidated financial statement audit report, audited segment reports, and notes under Regulation 33 of SEBI LODR.",
+                  "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/financial_results_q4_2026.pdf",
+                  "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/financial_results_q4_2026.xml"
+                },
+                {
+                  "title": "Shareholding Pattern for the Period Ended March 31, 2026",
+                  "summary": "Statement showing holding of specified securities, promoter shareholding, public holding, and compliance under Regulation 31 of SEBI LODR.",
+                  "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/shareholding_pattern_march_2026.pdf",
+                  "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/shareholding_pattern_march_2026.xml"
+                },
+                {
+                  "title": "Corporate Governance Compliance Report for Q4 FY 2025-26",
+                  "summary": "Quarterly compliance report on composition of board, committees, related party transactions, and approvals under Regulation 27(2) of SEBI LODR.",
+                  "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/corp_governance_report_q4_2026.pdf",
+                  "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/corp_governance_report_q4_2026.xml"
+                },
+                {
+                  "title": "Reconciliation of Share Capital Audit Report",
+                  "summary": "Audit report reconciling total admitted capital with issued capital, NSDL/CDSL balances, and physical shares under Regulation 76 of SEBI DP.",
+                  "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/share_capital_reconciliation_audit_2026.pdf",
+                  "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/share_capital_reconciliation_audit_2026.xml"
+                },
+                {
+                  "title": "Statement of Investor Complaints for the Quarter Ended March 31, 2026",
+                  "summary": "Compliance statement listing complaints pending, received, resolved, and remaining unresolved under Regulation 13(3) of SEBI LODR.",
+                  "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/investor_complaints_march_2026.pdf",
+                  "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/investor_complaints_march_2026.xml"
+                }
+              ]
+            };
+            const filings = state.corporateFilings[symbol] || state.corporateFilings["DEFAULT"];
+            renderFilings(filings);
+          });
+      }
+    }
+
+    function closeFilingsPopup() {
+      const overlay = document.getElementById('filings-popup-overlay');
+      if (!overlay) return;
+      overlay.classList.remove('visible');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 300);
+    }
+
+    function closeFilingsPopupOutside(e) {
+      if (e.target.id === 'filings-popup-overlay') {
+        closeFilingsPopup();
       }
     }
 
@@ -2400,27 +2789,9 @@
       sliderMax.min = 0;
       sliderMax.max = state.dateList.length - 1;
 
-      // Set defaults according to requirements:
-      // "daily data for current and last month will be shown by default. For month it will be for 15 months."
+      // Set defaults to full range by default
       let defaultStartIdx = 0;
       let defaultEndIdx = state.dateList.length - 1;
-
-      const maxDate = new Date(state.dateList[defaultEndIdx]);
-
-      if (state.currentMode === 'daily') {
-        // Find date starting from 1st of the previous month of maxDate
-        const targetYear = maxDate.getFullYear();
-        const targetMonth = maxDate.getMonth() - 1; // Last month
-        const thresholdDate = new Date(targetYear, targetMonth, 1);
-        
-        defaultStartIdx = state.dateList.findIndex(ts => ts >= thresholdDate.getTime());
-        if (defaultStartIdx === -1) defaultStartIdx = 0;
-      } else {
-        // Last 15 months
-        const thresholdDate = new Date(maxDate.getFullYear(), maxDate.getMonth() - 14, 1);
-        defaultStartIdx = state.dateList.findIndex(ts => ts >= thresholdDate.getTime());
-        if (defaultStartIdx === -1) defaultStartIdx = 0;
-      }
 
       sliderMin.value = defaultStartIdx;
       sliderMax.value = defaultEndIdx;
@@ -2872,9 +3243,17 @@
             <tr class="sub-table-row">
               <td colspan="5" class="nested-cell">
                 <div class="tag-table-wrap">
-                  <h4 style="font-size:0.8rem; text-transform:uppercase; color:var(--accent-secondary); margin-bottom:8px; font-weight:600;">
-                    Peer Group Aggregations (tag_menu.csv)
-                  </h4>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                    <h4 style="font-size:0.8rem; text-transform:uppercase; color:var(--accent-secondary); margin:0; font-weight:600;">
+                      Peer Group Aggregations (tag_menu.csv)
+                    </h4>
+                    <button class="jump-btn" onclick="event.stopPropagation(); showCorporateFilings('${comp.symbol}', '${comp.name.replace(/'/g, "\\'")}')" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; font-size: 0.72rem;">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 12px; height: 12px; stroke-width: 2.5;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Corporate Filings
+                    </button>
+                  </div>
                   <div class="tag-compare-grid">
                     ${renderTagComparisons(comp, parentGroup.rawRows)}
                   </div>
@@ -2888,7 +3267,7 @@
           <tr class="clickable-row ${isSubExpanded ? 'expanded' : ''}" onclick="toggleSubRow(event, '${subRowId}')">
             <td style="padding-left:24px; width:40px;"><span class="expand-icon">▸</span></td>
             <td>
-              <div style="font-weight:600; color:white;">${comp.name}</div>
+              <div style="font-weight:600; color:var(--text-main);">${comp.name}</div>
               <div style="font-size:0.75rem; color:var(--text-muted);">${comp.symbol} | ISIN: ${comp.isin}</div>
             </td>
             <td class="number-col font-medium text-main">${formatTurnover(comp.turnover)}</td>
@@ -2975,10 +3354,11 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 8px;">
               <div class="tag-compare-title" style="margin-bottom: 0;">${label}</div>
               ${isControl ? `
-                <button class="jump-btn" onclick="event.stopPropagation(); setAggDimension('${dataField}')" title="Jump to ${label} Aggregation">
-                  Jump
+                <button class="jump-btn" onclick="event.stopPropagation(); showDimensionDetails('${dataField}', '${companyTagValue.replace(/'/g, "\\'")}', '${label}', '${companyInfo.symbol}')" title="Show ${label} Details">
+                  Show
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 10px; height: 10px; stroke-width: 3;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
               ` : ''}

@@ -1,0 +1,62 @@
+{
+  "DEFAULT": [
+    {
+      "title": "Audited Financial Results for the Quarter and Year Ended March 31, 2026",
+      "summary": "Standalone and consolidated financial statement audit report, audited segment reports, and notes under Regulation 33 of SEBI LODR.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/financial_results_q4_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/financial_results_q4_2026.xml"
+    },
+    {
+      "title": "Shareholding Pattern for the Period Ended March 31, 2026",
+      "summary": "Statement showing holding of specified securities, promoter shareholding, public holding, and compliance under Regulation 31 of SEBI LODR.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/shareholding_pattern_march_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/shareholding_pattern_march_2026.xml"
+    },
+    {
+      "title": "Corporate Governance Compliance Report for Q4 FY 2025-26",
+      "summary": "Quarterly compliance report on composition of board, committees, related party transactions, and approvals under Regulation 27(2) of SEBI LODR.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/corp_governance_report_q4_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/corp_governance_report_q4_2026.xml"
+    },
+    {
+      "title": "Reconciliation of Share Capital Audit Report",
+      "summary": "Audit report reconciling total admitted capital with issued capital, NSDL/CDSL balances, and physical shares under Regulation 76 of SEBI DP.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/share_capital_reconciliation_audit_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/share_capital_reconciliation_audit_2026.xml"
+    },
+    {
+      "title": "Statement of Investor Complaints for the Quarter Ended March 31, 2026",
+      "summary": "Compliance statement listing complaints pending, received, resolved, and remaining unresolved under Regulation 13(3) of SEBI LODR.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/investor_complaints_march_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/investor_complaints_march_2026.xml"
+    }
+  ],
+  "RELIANCE": [
+    {
+      "title": "Reliance Industries - Press Release & Media Release on Q4 Results",
+      "summary": "Press release detailing company performance, revenue milestones, capital expenditure, and divisional summaries for FY 2025-26.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/reliance_media_release_q4_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/reliance_financial_results_q4_2026.xml"
+    },
+    {
+      "title": "Reliance Industries - Audited Financial Results (Consolidated) March 31, 2026",
+      "summary": "Detailed consolidated audited financial results and audit report from statutory auditors for the year ended March 31, 2026.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/reliance_financial_results_q4_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/reliance_financial_results_q4_2026.xml"
+    }
+  ],
+  "TCS": [
+    {
+      "title": "TCS - Audited Financial Results for the Year Ended March 31, 2026",
+      "summary": "Audited condensed financial statements and auditor's report under Indian Accounting Standards (Ind AS) for Tata Consultancy Services.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/tcs_audited_financials_q4_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/tcs_audited_financials_q4_2026.xml"
+    },
+    {
+      "title": "TCS - Shareholding Pattern and Corporate Governance Q4 2026",
+      "summary": "Quarterly listing compliances for Tata Consultancy Services.",
+      "pdf_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/tcs_governance_q4_2026.pdf",
+      "xbrl_url": "https://www.bseindia.com/xml-data/corpfiling/AttachLive/tcs_governance_q4_2026.xml"
+    }
+  ]
+}
